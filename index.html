@@ -973,11 +973,389 @@
     margin-top: 16px;
   }
 
+
+  /* AUTH PAGES */
+  #auth-wrapper {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .auth-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 40px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 8px 32px rgba(26,61,181,0.12);
+  }
+  .auth-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--royal);
+    margin-bottom: 6px;
+  }
+  .auth-logo span { color: var(--muted); }
+  .auth-subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+  .auth-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+  .auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .auth-field label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .auth-field input, .auth-field select {
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color 0.2s;
+    outline: none;
+    width: 100%;
+  }
+  .auth-field input:focus, .auth-field select:focus {
+    border-color: var(--royal);
+  }
+  .auth-btn {
+    width: 100%;
+    background: var(--royal);
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .auth-btn:hover { background: var(--royal-dark); transform: translateY(-1px); }
+  .auth-btn:disabled { background: var(--muted); cursor: not-allowed; transform: none; }
+  .auth-switch {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  .auth-switch a {
+    color: var(--royal);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .auth-error {
+    background: #fff0f0;
+    border: 1px solid #ffcccc;
+    color: var(--red);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    margin-bottom: 14px;
+    display: none;
+  }
+  .auth-success {
+    background: #f0faf4;
+    border: 1px solid #a8e6bf;
+    color: var(--green);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    margin-bottom: 14px;
+    display: none;
+  }
+  .role-picker {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .role-card {
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .role-card:hover { border-color: var(--royal); background: var(--royal-pale); }
+  .role-card.selected { border-color: var(--royal); background: var(--royal-pale); }
+  .role-card-icon { font-size: 1.8rem; margin-bottom: 8px; }
+  .role-card-label { font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--text); }
+  .role-card-sub { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 0;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* AT DASHBOARD */
+  #at-dashboard-wrapper {
+    display: none;
+    min-height: 100vh;
+    background: var(--bg);
+  }
+  .at-dash-header {
+    background: var(--royal);
+    color: #fff;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .at-dash-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+  }
+  .at-dash-logo span { opacity: 0.6; }
+  .at-dash-body { padding: 36px 40px; max-width: 1000px; }
+  .at-dash-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+  .at-dash-title span { color: var(--royal); }
+  .class-code-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 20px;
+    margin: 16px 0 32px;
+    box-shadow: var(--shadow);
+  }
+  .class-code-label { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+  .class-code-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--royal);
+    letter-spacing: 0.12em;
+  }
+  .copy-btn {
+    background: var(--royal-pale);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--royal);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .student-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .student-table th {
+    background: var(--surface2);
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .student-table td {
+    padding: 12px 16px;
+    font-size: 0.84rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .student-table tr:last-child td { border-bottom: none; }
+  .progress-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+  .pill-complete { background: #e8f5e9; color: var(--green); }
+  .pill-progress { background: var(--royal-pale); color: var(--royal); }
+  .pill-notstarted { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+  .signout-btn {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 6px;
+    padding: 7px 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+  .signout-btn:hover { background: rgba(255,255,255,0.25); }
+
+  @media (max-width: 768px) {
+    .auth-card { padding: 28px 20px; }
+    .role-picker { grid-template-columns: 1fr; }
+    .at-dash-header { padding: 16px 20px; }
+    .at-dash-body { padding: 20px; }
+  }
+
 </style>
 </head>
 <body>
 
-<nav>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- AUTH WRAPPER — shown before login                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-logo">AT<span>las</span></div>
+    <div class="auth-subtitle">Athletic Training Learning System</div>
+
+    <!-- SCREEN 1: Role picker -->
+    <div id="auth-screen-role">
+      <div class="auth-title">Welcome — who are you?</div>
+      <div class="role-picker">
+        <div class="role-card" id="role-student" onclick="selectRole('student')">
+          <div class="role-card-icon">🎓</div>
+          <div class="role-card-label">Student AT</div>
+          <div class="role-card-sub">I'm learning</div>
+        </div>
+        <div class="role-card" id="role-at" onclick="selectRole('at')">
+          <div class="role-card-icon">⚕️</div>
+          <div class="role-card-label">Athletic Trainer</div>
+          <div class="role-card-sub">I supervise students</div>
+        </div>
+      </div>
+      <button class="auth-btn" onclick="goToSignup()">Continue</button>
+      <div class="auth-switch">Already have an account? <a onclick="showAuthScreen('login')">Sign in</a></div>
+    </div>
+
+    <!-- SCREEN 2: Sign up -->
+    <div id="auth-screen-signup" style="display:none">
+      <div class="auth-title" id="signup-title">Create your account</div>
+      <div class="auth-error" id="signup-error"></div>
+      <div class="auth-success" id="signup-success"></div>
+      <div class="auth-field">
+        <label>Full Name</label>
+        <input type="text" id="signup-name" placeholder="Your full name"/>
+      </div>
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="your@email.com"/>
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="signup-password" placeholder="At least 8 characters"/>
+      </div>
+      <div class="auth-field">
+        <label>School</label>
+        <input type="text" id="signup-school" placeholder="Your school name"/>
+      </div>
+      <div class="auth-field" id="signup-code-field" style="display:none">
+        <label>Class Code <span style="color:var(--muted);font-weight:400">(given to you by your AT)</span></label>
+        <input type="text" id="signup-code" placeholder="e.g. ABC123" style="text-transform:uppercase;letter-spacing:0.1em"/>
+      </div>
+      <button class="auth-btn" id="signup-btn" onclick="handleSignup()">Create Account</button>
+      <div class="auth-switch"><a onclick="showAuthScreen('role')">← Back</a></div>
+    </div>
+
+    <!-- SCREEN 3: Login -->
+    <div id="auth-screen-login" style="display:none">
+      <div class="auth-title">Sign in to ATlas</div>
+      <div class="auth-error" id="login-error"></div>
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="your@email.com"/>
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="Your password"/>
+      </div>
+      <button class="auth-btn" id="login-btn" onclick="handleLogin()">Sign In</button>
+      <div class="auth-switch">Don't have an account? <a onclick="showAuthScreen('role')">Sign up</a></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- AT DASHBOARD — shown to athletic trainers after login      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="at-dashboard-wrapper">
+  <div class="at-dash-header">
+    <div class="at-dash-logo">AT<span>las</span> — Trainer Dashboard</div>
+    <button class="signout-btn" onclick="handleSignOut()">Sign Out</button>
+  </div>
+  <div class="at-dash-body">
+    <div class="at-dash-title">Welcome, <span id="at-name">Coach</span></div>
+    <p style="color:var(--muted);font-size:0.88rem;margin-bottom:8px">Share this class code with your students so they can join your class:</p>
+    <div class="class-code-box">
+      <div>
+        <div class="class-code-label">Your Class Code</div>
+        <div class="class-code-value" id="at-class-code">------</div>
+      </div>
+      <button class="copy-btn" onclick="copyClassCode()">Copy</button>
+    </div>
+
+    <div class="section-title" style="margin-bottom:16px">Your Students</div>
+    <div id="at-no-students" style="display:none;color:var(--muted);font-size:0.88rem;padding:20px 0">
+      No students have joined your class yet. Share your class code to get started.
+    </div>
+    <table class="student-table" id="at-student-table" style="display:none">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>Email</th>
+          <th>Ankle Anatomy</th>
+          <th>Knee Anatomy</th>
+          <th>Medical Terminology</th>
+        </tr>
+      </thead>
+      <tbody id="at-student-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<nav style="display:none">
   <div class="logo">AT<span>las</span></div>
   <ul class="nav-links">
     <li><a href="#" class="active" onclick="showPage('dashboard',this);return false;">Dashboard</a></li>
@@ -985,7 +1363,7 @@
   </ul>
 </nav>
 
-<div class="app">
+<div class="app" style="display:none">
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-section">
@@ -2306,6 +2684,361 @@ function lessonBack() {
 
 function goBack() {
   showPage(prevPage);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SUPABASE AUTH SYSTEM
+// ═══════════════════════════════════════════════════════════════
+
+// Load Supabase dynamically
+const supabaseScript = document.createElement('script');
+supabaseScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+supabaseScript.onload = initSupabase;
+document.head.appendChild(supabaseScript);
+
+const SUPABASE_URL = 'https://vtacdzdatiwcmvwygnow.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_w3iPolC5_IGSjm5ou2T6jA_a0VtgUNF';
+let supabase = null;
+let currentUser = null;
+let currentProfile = null;
+let selectedRole = null;
+
+async function initSupabase() {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // Check if user is already logged in
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    await handleSession(session.user);
+  }
+  // If not logged in, auth-wrapper stays visible (it's shown by default)
+}
+
+// ─── Role selection ───────────────────────────────────────────
+function selectRole(role) {
+  selectedRole = role;
+  document.getElementById('role-student').classList.toggle('selected', role === 'student');
+  document.getElementById('role-at').classList.toggle('selected', role === 'at');
+}
+
+function goToSignup() {
+  if (!selectedRole) {
+    selectRole('student');
+  }
+  document.getElementById('signup-title').textContent =
+    selectedRole === 'at' ? 'Create your AT account' : 'Create your student account';
+  document.getElementById('signup-code-field').style.display =
+    selectedRole === 'student' ? 'flex' : 'none';
+  showAuthScreen('signup');
+}
+
+function showAuthScreen(screen) {
+  document.getElementById('auth-screen-role').style.display = screen === 'role' ? 'block' : 'none';
+  document.getElementById('auth-screen-signup').style.display = screen === 'signup' ? 'block' : 'none';
+  document.getElementById('auth-screen-login').style.display = screen === 'login' ? 'block' : 'none';
+}
+
+// ─── Sign up ──────────────────────────────────────────────────
+async function handleSignup() {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const school = document.getElementById('signup-school').value.trim();
+  const code = document.getElementById('signup-code').value.trim().toUpperCase();
+  const errEl = document.getElementById('signup-error');
+  const sucEl = document.getElementById('signup-success');
+  const btn = document.getElementById('signup-btn');
+
+  errEl.style.display = 'none';
+  sucEl.style.display = 'none';
+
+  if (!name || !email || !password || !school) {
+    errEl.textContent = 'Please fill in all fields.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (selectedRole === 'student' && !code) {
+    errEl.textContent = 'Please enter your class code from your AT.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (password.length < 8) {
+    errEl.textContent = 'Password must be at least 8 characters.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Creating account...';
+
+  // If student, verify class code exists first
+  if (selectedRole === 'student') {
+    const { data: classData, error: classErr } = await supabase
+      .from('classes')
+      .select('id')
+      .eq('join_code', code)
+      .single();
+
+    if (classErr || !classData) {
+      errEl.textContent = 'Class code not found. Check with your AT and try again.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+      return;
+    }
+  }
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { full_name: name, role: selectedRole, school }
+    }
+  });
+
+  if (error) {
+    errEl.textContent = error.message;
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Create Account';
+    return;
+  }
+
+  // If AT, create their class with a join code
+  if (selectedRole === 'at' && data.user) {
+    const joinCode = generateCode();
+    await supabase.from('classes').insert({
+      at_id: data.user.id,
+      class_name: `${name}'s Class`,
+      join_code: joinCode
+    });
+  }
+
+  // If student, join the class
+  if (selectedRole === 'student' && data.user) {
+    const { data: classData } = await supabase
+      .from('classes')
+      .select('id')
+      .eq('join_code', code)
+      .single();
+
+    if (classData) {
+      await supabase.from('class_memberships').insert({
+        class_id: classData.id,
+        student_id: data.user.id
+      });
+    }
+  }
+
+  sucEl.textContent = 'Account created! Check your email to confirm, then sign in.';
+  sucEl.style.display = 'block';
+  btn.disabled = false;
+  btn.textContent = 'Create Account';
+}
+
+function generateCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+// ─── Login ────────────────────────────────────────────────────
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+
+  errEl.style.display = 'none';
+
+  if (!email || !password) {
+    errEl.textContent = 'Please enter your email and password.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    errEl.textContent = 'Incorrect email or password. Please try again.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+    return;
+  }
+
+  await handleSession(data.user);
+  btn.disabled = false;
+  btn.textContent = 'Sign In';
+}
+
+// ─── Handle session (after login or on page load) ─────────────
+async function handleSession(user) {
+  currentUser = user;
+
+  // Fetch profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
+  currentProfile = profile;
+
+  if (!profile) return;
+
+  // Hide auth
+  document.getElementById('auth-wrapper').style.display = 'none';
+
+  if (profile.role === 'at') {
+    await loadATDashboard(profile);
+  } else {
+    await loadStudentDashboard(profile);
+  }
+}
+
+// ─── Student dashboard ────────────────────────────────────────
+async function loadStudentDashboard(profile) {
+  // Show the main app nav and content
+  document.querySelector('nav').style.display = 'flex';
+  document.querySelector('.app').style.display = 'flex';
+
+  // Add sign out button to nav
+  const navSignout = document.createElement('button');
+  navSignout.className = 'signout-btn';
+  navSignout.textContent = 'Sign Out';
+  navSignout.style.cssText = 'background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:6px;padding:7px 16px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:"DM Sans",sans-serif;';
+  navSignout.onclick = handleSignOut;
+  document.querySelector('nav').appendChild(navSignout);
+
+  // Load progress from Supabase
+  await loadProgressFromDB();
+}
+
+// ─── Load progress from DB ────────────────────────────────────
+async function loadProgressFromDB() {
+  if (!currentUser) return;
+  const { data } = await supabase
+    .from('progress')
+    .select('*')
+    .eq('student_id', currentUser.id);
+
+  if (!data) return;
+
+  data.forEach(row => {
+    if (row.status === 'complete') {
+      progress.completed.add(row.module_key);
+      updateModuleCardUI(row.module_key);
+    } else if (row.status === 'in_progress') {
+      progress.inProgress.add(row.module_key);
+    }
+  });
+  updateDashboardStats();
+}
+
+// ─── Save progress to DB ──────────────────────────────────────
+async function saveProgressToDB(moduleKey, status) {
+  if (!currentUser) return;
+  await supabase.from('progress').upsert({
+    student_id: currentUser.id,
+    module_key: moduleKey,
+    status: status,
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'student_id,module_key' });
+}
+
+// Override markModuleInProgress to also save to DB
+const _origMarkInProgress = markModuleInProgress;
+function markModuleInProgress(key) {
+  _origMarkInProgress(key);
+  saveProgressToDB(key, 'in_progress');
+}
+
+// Override markModuleComplete to also save to DB
+const _origMarkComplete = markModuleComplete;
+function markModuleComplete(key) {
+  _origMarkComplete(key);
+  saveProgressToDB(key, 'complete');
+}
+
+// ─── AT Dashboard ─────────────────────────────────────────────
+async function loadATDashboard(profile) {
+  document.getElementById('at-dashboard-wrapper').style.display = 'block';
+  document.getElementById('at-name').textContent = profile.full_name || 'Coach';
+
+  // Get class code
+  const { data: classData } = await supabase
+    .from('classes')
+    .select('*')
+    .eq('at_id', currentUser.id)
+    .single();
+
+  if (classData) {
+    document.getElementById('at-class-code').textContent = classData.join_code;
+
+    // Get students in class
+    const { data: members } = await supabase
+      .from('class_memberships')
+      .select('student_id, profiles(full_name, email)')
+      .eq('class_id', classData.id);
+
+    if (!members || members.length === 0) {
+      document.getElementById('at-no-students').style.display = 'block';
+      return;
+    }
+
+    document.getElementById('at-student-table').style.display = 'table';
+    const tbody = document.getElementById('at-student-tbody');
+    tbody.innerHTML = '';
+
+    for (const member of members) {
+      const studentId = member.student_id;
+      const name = member.profiles?.full_name || 'Unknown';
+      const email = member.profiles?.email || '';
+
+      // Get their progress
+      const { data: prog } = await supabase
+        .from('progress')
+        .select('*')
+        .eq('student_id', studentId);
+
+      const getStatus = (key) => {
+        const row = prog?.find(p => p.module_key === key);
+        if (!row || row.status === 'not_started') return '<span class="progress-pill pill-notstarted">Not Started</span>';
+        if (row.status === 'in_progress') return '<span class="progress-pill pill-progress">In Progress</span>';
+        return '<span class="progress-pill pill-complete">Complete</span>';
+      };
+
+      tbody.innerHTML += `
+        <tr>
+          <td>${name}</td>
+          <td style="color:var(--muted)">${email}</td>
+          <td>${getStatus('ankle')}</td>
+          <td>${getStatus('knee')}</td>
+          <td>${getStatus('terminology')}</td>
+        </tr>`;
+    }
+  }
+}
+
+function copyClassCode() {
+  const code = document.getElementById('at-class-code').textContent;
+  navigator.clipboard.writeText(code);
+  const btn = document.querySelector('.copy-btn');
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = 'Copy', 2000);
+}
+
+// ─── Sign out ─────────────────────────────────────────────────
+async function handleSignOut() {
+  await supabase.auth.signOut();
+  location.reload();
 }
 </script>
 </body>
