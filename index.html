@@ -1,0 +1,2478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATlas — Athletic Training Learning System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f7ff;
+    --white: #ffffff;
+    --surface: #ffffff;
+    --surface2: #eef2ff;
+    --royal: #1a3db5;
+    --royal-dark: #122d8a;
+    --royal-light: #2e55d4;
+    --royal-pale: #e8edfb;
+    --text: #0f1c3f;
+    --muted: #6b7a9e;
+    --border: #dce3f5;
+    --red: #e03131;
+    --yellow: #f59f00;
+    --green: #2f9e44;
+    --shadow: 0 2px 12px rgba(26,61,181,0.08);
+    --shadow-hover: 0 8px 28px rgba(26,61,181,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 64px;
+    background: var(--royal);
+    box-shadow: 0 2px 16px rgba(26,61,181,0.18);
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.45rem;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+  }
+  .logo span { color: rgba(255,255,255,0.55); }
+
+  .nav-links {
+    display: flex;
+    gap: 4px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.12); }
+  .nav-links a.active { color: #fff; background: rgba(255,255,255,0.18); }
+
+  .nav-cta {
+    background: #ffffff;
+    color: var(--royal);
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.84rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .nav-cta:hover { background: var(--royal-pale); transform: translateY(-1px); }
+
+  /* MAIN LAYOUT */
+  .app {
+    display: flex;
+    padding-top: 64px;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 256px;
+    flex-shrink: 0;
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    height: calc(100vh - 64px);
+    position: sticky;
+    top: 64px;
+    overflow-y: auto;
+    padding: 20px 0;
+    box-shadow: 2px 0 8px rgba(26,61,181,0.04);
+  }
+
+  .sidebar-section { margin-bottom: 6px; }
+
+  .sidebar-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 18px 8px;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 18px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-left: 3px solid transparent;
+    font-size: 0.86rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .sidebar-item:hover { background: var(--surface2); color: var(--text); }
+  .sidebar-item.active { background: var(--royal-pale); border-left-color: var(--royal); color: var(--royal); font-weight: 600; }
+
+  .sidebar-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    margin: 1px 18px 4px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--royal);
+    border-radius: 2px;
+  }
+
+  /* MAIN */
+  .main { flex: 1; overflow-y: auto; padding: 36px 44px; }
+
+  .page { display: none; animation: fadeIn 0.25s ease; }
+  .page.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* DASHBOARD */
+  .dashboard-header { margin-bottom: 32px; }
+  .greeting { font-size: 0.84rem; color: var(--muted); margin-bottom: 6px; }
+  .dashboard-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+  .dashboard-header h1 span { color: var(--royal); }
+
+  /* STATS */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+
+  .stat-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    box-shadow: var(--shadow);
+    border-top: 3px solid var(--royal);
+  }
+  .stat-card.yellow-top { border-top-color: var(--yellow); }
+  .stat-card.green-top { border-top-color: var(--green); }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--royal);
+    margin-bottom: 2px;
+  }
+  .stat-card.yellow-top .stat-num { color: var(--yellow); }
+  .stat-card.green-top .stat-num { color: var(--green); }
+  .stat-label { font-size: 0.8rem; color: var(--muted); }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: var(--royal);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* SKILL GRID */
+  .skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+
+  .skill-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow);
+  }
+  .skill-card:hover {
+    border-color: var(--royal);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .skill-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .skill-icon {
+    width: 38px; height: 38px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .skill-icon svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
+
+  .badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .badge.level1 { background: #e8f5e9; color: #2f9e44; }
+  .badge.level2 { background: #e8edfb; color: var(--royal); }
+  .badge.level3 { background: #fff8e1; color: #f59f00; }
+
+  .skill-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+  .skill-card p {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+
+  .skill-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.76rem;
+    color: var(--muted);
+  }
+
+  .mini-progress {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 9px;
+  }
+  .mini-fill {
+    height: 100%;
+    background: var(--royal);
+    border-radius: 2px;
+  }
+
+  /* SKILL DETAIL */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--royal);
+    font-size: 0.84rem;
+    cursor: pointer;
+    margin-bottom: 24px;
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    transition: opacity 0.2s;
+  }
+  .back-btn:hover { opacity: 0.7; }
+
+  .skill-detail-header {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 32px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .skill-detail-icon {
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .skill-detail-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+  .skill-detail-header p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+
+  .steps-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+
+  .step-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow);
+  }
+  .step-item:hover { border-color: var(--royal); }
+  .step-item.done { background: #f0f4ff; }
+
+  .step-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-family: 'Syne', sans-serif;
+    color: var(--muted);
+  }
+  .step-item.done .step-num {
+    background: var(--royal);
+    border-color: var(--royal);
+    color: #fff;
+  }
+
+  .step-content h4 { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; }
+  .step-content p { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+  .resource-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 7px;
+    font-size: 0.76rem;
+    color: var(--royal);
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.2s;
+  }
+  .resource-link:hover { opacity: 0.7; }
+
+  /* ROADMAP */
+  .roadmap-track {
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 40px;
+  }
+  .roadmap-track::before {
+    content: '';
+    position: absolute;
+    left: 9px; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .roadmap-item { position: relative; margin-bottom: 20px; }
+  .roadmap-item::before {
+    content: '';
+    position: absolute;
+    left: -25px; top: 15px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--border);
+    border: 2px solid var(--white);
+  }
+  .roadmap-item.done::before { background: var(--green); }
+  .roadmap-item.current::before {
+    background: var(--royal);
+    box-shadow: 0 0 0 4px rgba(26,61,181,0.15);
+  }
+
+  .roadmap-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .roadmap-card:hover { border-color: var(--royal); transform: translateX(3px); }
+  .roadmap-item.current .roadmap-card { border-color: var(--royal); border-left: 3px solid var(--royal); }
+
+  .roadmap-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+  .roadmap-card p { font-size: 0.78rem; color: var(--muted); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    /* Nav */
+    nav { padding: 0 14px; height: 56px; }
+    .logo { font-size: 1.2rem; }
+    .nav-links { gap: 2px; }
+    .nav-links a { font-size: 0.78rem; padding: 5px 8px; }
+
+    /* Layout */
+    .sidebar { display: none; }
+    .app { padding-top: 56px; }
+    .main { padding: 20px 16px; }
+
+    /* Dashboard */
+    .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat-num { font-size: 1.5rem; }
+    .dashboard-header h1 { font-size: 1.5rem; }
+    .skill-grid { grid-template-columns: 1fr; }
+
+    /* Quick reference */
+    .qr-grid { grid-template-columns: 1fr; }
+    .qr-table-row { grid-template-columns: 1fr; gap: 2px; }
+    .qr-table-row > div:not(:first-child) { padding-left: 10px; font-size: 0.72rem; color: var(--muted); }
+
+    /* Lesson */
+    .lesson-nav-inner { max-width: 100%; }
+    .lesson-btn { padding: 9px 16px; font-size: 0.82rem; }
+    #page-lesson { padding-bottom: 80px; }
+    .lesson-body h1 { font-size: 1.3rem; }
+    .lesson-body { max-width: 100%; }
+    .lesson-image-block img { max-width: 100% !important; }
+    .lesson-subterm { margin-left: 0; }
+    .lesson-sections { gap: 8px; }
+
+    /* Match game */
+    .match-columns { grid-template-columns: 1fr; }
+    .match-col:last-child { margin-top: 8px; }
+    .match-item { font-size: 0.78rem; padding: 8px 10px; }
+
+    /* Skill detail */
+    .skill-detail-header { flex-direction: column; }
+    .back-btn { margin-bottom: 16px; }
+
+    /* Roadmap/cards */
+    .roadmap-track { padding-left: 20px; }
+  }
+
+  @media (max-width: 480px) {
+    .nav-links a { font-size: 0.72rem; padding: 4px 6px; }
+    .stats-row { grid-template-columns: 1fr; }
+    .lesson-btn { padding: 8px 14px; font-size: 0.78rem; }
+  }
+  /* QUICK REFERENCE */
+  .qr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .qr-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .qr-card.qr-red { border-top: 3px solid var(--red); }
+  .qr-card.qr-yellow { border-top: 3px solid var(--yellow); }
+  .qr-card.qr-blue { border-top: 3px solid var(--royal); }
+
+  .qr-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .qr-icon {
+    width: 38px; height: 38px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .qr-icon svg { width: 18px; height: 18px; }
+
+  .qr-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .qr-card-sub { font-size: 0.75rem; color: var(--muted); }
+
+  .qr-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .qr-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .qr-tag.red { background: rgba(224,49,49,0.08); color: var(--red); }
+  .qr-tag.blue { background: var(--royal-pale); color: var(--royal); }
+
+  .qr-rule {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* SPECTRUM */
+  .qr-spectrum { display: flex; flex-direction: column; gap: 0; }
+  .qr-spectrum-item { padding: 10px 0; }
+  .qr-spectrum-divider { height: 1px; background: var(--border); }
+  .qr-spectrum-label { font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700; margin-bottom: 3px; }
+  .qr-spectrum-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; margin-bottom: 4px; }
+  .qr-spectrum-action { font-size: 0.76rem; font-weight: 600; color: var(--green); }
+
+  /* NUMBERED STEPS */
+  .qr-steps { display: flex; flex-direction: column; gap: 8px; }
+  .qr-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.8rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .qr-step-num {
+    width: 22px; height: 22px;
+    background: var(--royal);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-family: 'Syne', sans-serif;
+  }
+
+  /* TABLE */
+  .qr-table { display: flex; flex-direction: column; gap: 0; font-size: 0.76rem; }
+  .qr-table-row {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1.5fr;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.4;
+    align-items: start;
+  }
+  .qr-table-row:last-child { border-bottom: none; }
+  .qr-table-row.header {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    padding-bottom: 6px;
+  }
+
+  /* LESSON FLOW */
+  .lesson-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -2px 12px rgba(26,61,181,0.06);
+    z-index: 50;
+    padding: 14px 44px 14px calc(256px + 44px);
+  }
+  @media (max-width: 768px) {
+    .lesson-nav {
+      padding: 12px 16px !important;
+    }
+  }
+  .lesson-nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 900px;
+  }
+  .lesson-pagination {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .lesson-btn {
+    padding: 9px 22px;
+    border-radius: 7px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+  .lesson-btn-primary {
+    background: var(--royal);
+    color: #fff;
+  }
+  .lesson-btn-primary:hover { background: var(--royal-dark); transform: translateY(-1px); }
+  .lesson-btn-ghost {
+    background: transparent;
+    color: var(--royal);
+    border: 1.5px solid var(--border);
+  }
+  .lesson-btn-ghost:hover { border-color: var(--royal); background: var(--royal-pale); }
+  .lesson-btn-ghost[style*="visibility:hidden"] { pointer-events:none; }
+
+  .lesson-body {
+    max-width: 720px;
+  }
+  .lesson-body h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+  .lesson-body h1 span { color: var(--royal); }
+  .lesson-body p {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .lesson-body .lesson-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .lesson-section-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--royal-pale);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+  }
+  .lesson-section-pill-num {
+    width: 26px; height: 26px;
+    background: var(--royal);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-family: 'Syne', sans-serif;
+  }
+  .lesson-section-pill span {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--royal);
+  }
+
+  .lesson-step-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .lesson-step-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--royal);
+    background: var(--royal-pale);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .lesson-placeholder {
+    background: var(--surface2);
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 48px 32px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-top: 24px;
+  }
+
+  .lesson-term {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--royal);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+  }
+  .lesson-term-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--royal);
+    margin-bottom: 6px;
+  }
+  .lesson-term-def {
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  .lesson-coming-soon {
+    background: var(--bg);
+    border: 1.5px dashed var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .lesson-coming-soon-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .lesson-coming-soon-terms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .lesson-coming-soon-terms span {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .lesson-attribution {
+    font-size: 0.75rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    margin-top: 8px;
+  }
+  .lesson-attribution a {
+    color: var(--royal);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .lesson-attribution a:hover { text-decoration: underline; }
+
+
+  .lesson-video-embed {
+    border-radius: 8px;
+    overflow: hidden;
+    background: #000;
+    margin-top: 8px;
+  }
+  .lesson-video-embed iframe {
+    display: block;
+    width: 100%;
+  }
+
+  .lesson-subterm {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--royal-light);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 10px 0 10px 20px;
+    box-shadow: var(--shadow);
+  }
+  .lesson-subterm-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--royal-light);
+    margin-bottom: 6px;
+  }
+  .lesson-image-block {
+    margin-top: 14px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .lesson-image-credit {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 5px;
+    font-style: italic;
+  }
+
+  /* MATCH GAME */
+  .match-instructions {
+    background: var(--royal-pale);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.82rem;
+    color: var(--text);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .match-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .match-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .match-col-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .match-item {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1.4;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    box-shadow: var(--shadow);
+    user-select: none;
+  }
+  .match-item:hover { border-color: var(--royal); background: var(--royal-pale); }
+  .match-item.selected {
+    border-color: var(--royal);
+    background: var(--royal-pale);
+    font-weight: 600;
+    color: var(--royal);
+    box-shadow: 0 0 0 3px rgba(26,61,181,0.12);
+  }
+  .match-item.correct {
+    border-color: var(--green);
+    background: #f0faf0;
+    color: var(--green);
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.35s ease;
+  }
+  .match-item.wrong {
+    border-color: var(--red);
+    background: #fff0f0;
+    animation: shake 0.3s ease;
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  .match-complete-msg {
+    text-align: center;
+    padding: 40px 20px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-top: 16px;
+  }
+
+
+  #auth-overlay { position:fixed;inset:0;background:var(--bg);z-index:1000;overflow-y:auto;display:flex;align-items:center;justify-content:center;padding:24px; }
+  #at-dashboard-overlay { position:fixed;inset:0;background:var(--bg);z-index:1000;overflow-y:auto; }
+  .auth-screen { width:100%;display:flex;align-items:center;justify-content:center; }
+  .auth-card { background:var(--white);border:1px solid var(--border);border-radius:16px;padding:36px 40px;width:100%;max-width:460px;box-shadow:var(--shadow-hover); }
+  .auth-logo { font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;color:var(--royal);margin-bottom:20px; }
+  .auth-logo span { color:var(--muted); }
+  .auth-title { font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);margin-bottom:6px; }
+  .auth-sub { font-size:0.88rem;color:var(--muted);margin-bottom:28px;line-height:1.5; }
+  .auth-role-btns { display:flex;flex-direction:column;gap:12px;margin-bottom:20px; }
+  .auth-role-btn { background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:16px 20px;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:16px;font-family:'DM Sans',sans-serif;width:100%; }
+  .auth-role-btn:hover { border-color:var(--royal);background:var(--royal-pale);transform:translateY(-1px);box-shadow:var(--shadow-hover); }
+  .auth-role-icon { font-size:1.6rem;flex-shrink:0; }
+  .auth-role-label { font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:2px; }
+  .auth-role-desc { font-size:0.78rem;color:var(--muted); }
+  .auth-form { display:flex;flex-direction:column;gap:14px;margin-bottom:16px; }
+  .auth-field { display:flex;flex-direction:column;gap:5px; }
+  .auth-field label { font-size:0.82rem;font-weight:600;color:var(--text); }
+  .auth-field input { border:1.5px solid var(--border);border-radius:7px;padding:10px 14px;font-size:0.88rem;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);transition:border-color 0.2s;outline:none; }
+  .auth-field input:focus { border-color:var(--royal); }
+  .auth-submit { background:var(--royal);color:#fff;border:none;border-radius:8px;padding:12px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:4px;width:100%; }
+  .auth-submit:hover { background:var(--royal-dark);transform:translateY(-1px); }
+  .auth-submit:disabled { opacity:0.6;cursor:not-allowed;transform:none; }
+  .auth-switch { font-size:0.82rem;color:var(--muted);margin-top:12px;text-align:center; }
+  .auth-switch a { color:var(--royal);font-weight:600;text-decoration:none; }
+  .auth-error { background:#fff0f0;border:1px solid #fcc;border-radius:6px;padding:10px 14px;font-size:0.82rem;color:var(--red); }
+  .at-student-card { background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;box-shadow:var(--shadow); }
+  .at-student-name { font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:4px; }
+  .at-student-email { font-size:0.8rem;color:var(--muted);margin-bottom:14px; }
+  .at-progress-grid { display:flex;gap:8px;flex-wrap:wrap; }
+  .at-progress-pill { font-size:0.72rem;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--bg);color:var(--muted); }
+  .at-progress-pill.complete { background:#e8f5e9;color:var(--green);border-color:var(--green); }
+  .at-progress-pill.in_progress { background:var(--royal-pale);color:var(--royal);border-color:var(--royal); }
+  @media (max-width:768px) { .auth-card { padding:28px 20px; } }
+
+
+  .yt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--royal);
+    color: #fff;
+    text-decoration: none;
+    padding: 11px 20px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 12px;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+  .yt-btn:hover { background: var(--royal-dark); }
+
+</style>
+</head>
+<body>
+
+  <!-- AUTH OVERLAY -->
+  <div id="auth-overlay" style="display:none">
+    <div id="auth-landing" class="auth-screen">
+      <div class="auth-card">
+        <div class="auth-logo">AT<span>las</span></div>
+        <h1 class="auth-title">Welcome to ATlas</h1>
+        <p class="auth-sub">The athletic training learning platform for student ATs and their supervisors.</p>
+        <div class="auth-role-btns">
+          <button class="auth-role-btn" onclick="showAuth('student-signup')">
+            <div class="auth-role-icon">&#127891;</div>
+            <div><div class="auth-role-label">I'm a Student</div><div class="auth-role-desc">Access lessons and track my progress</div></div>
+          </button>
+          <button class="auth-role-btn" onclick="showAuth('at-signup')">
+            <div class="auth-role-icon">&#127973;</div>
+            <div><div class="auth-role-label">I'm an Athletic Trainer</div><div class="auth-role-desc">Manage my class and view student progress</div></div>
+          </button>
+        </div>
+        <p class="auth-switch">Already have an account? <a href="#" onclick="showAuth('login')">Log in</a></p>
+      </div>
+    </div>
+    <div id="auth-login" class="auth-screen" style="display:none">
+      <div class="auth-card">
+        <div class="auth-logo">AT<span>las</span></div>
+        <h1 class="auth-title">Log In</h1>
+        <div class="auth-form">
+          <div class="auth-field"><label>Email</label><input type="email" id="login-email" placeholder="your@email.com"/></div>
+          <div class="auth-field"><label>Password</label><input type="password" id="login-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"/></div>
+          <div id="login-error" class="auth-error" style="display:none"></div>
+          <button class="auth-submit" onclick="handleLogin()">Log In</button>
+        </div>
+        <p class="auth-switch">No account? <a href="#" onclick="showAuth('landing')">Sign up</a></p>
+      </div>
+    </div>
+    <div id="auth-student-signup" class="auth-screen" style="display:none">
+      <div class="auth-card">
+        <div class="auth-logo">AT<span>las</span></div>
+        <h1 class="auth-title">Student Sign Up</h1>
+        <div class="auth-form">
+          <div class="auth-field"><label>Full Name</label><input type="text" id="student-name" placeholder="Your full name"/></div>
+          <div class="auth-field"><label>Email</label><input type="email" id="student-email" placeholder="your@email.com"/></div>
+          <div class="auth-field"><label>Password</label><input type="password" id="student-password" placeholder="At least 6 characters"/></div>
+          <div class="auth-field"><label>School</label><input type="text" id="student-school" placeholder="Your school name"/></div>
+          <div class="auth-field"><label>Class Code <span style="font-weight:400;color:var(--muted)">(from your AT)</span></label><input type="text" id="student-code" placeholder="e.g. ABC123" style="text-transform:uppercase"/></div>
+          <div id="student-error" class="auth-error" style="display:none"></div>
+          <button class="auth-submit" onclick="handleStudentSignup()">Create Account</button>
+        </div>
+        <p class="auth-switch">Already have an account? <a href="#" onclick="showAuth('login')">Log in</a> &nbsp;|&nbsp; <a href="#" onclick="showAuth('landing')">Back</a></p>
+      </div>
+    </div>
+    <div id="auth-at-signup" class="auth-screen" style="display:none">
+      <div class="auth-card">
+        <div class="auth-logo">AT<span>las</span></div>
+        <h1 class="auth-title">Athletic Trainer Sign Up</h1>
+        <div class="auth-form">
+          <div class="auth-field"><label>Full Name</label><input type="text" id="at-name" placeholder="Your full name"/></div>
+          <div class="auth-field"><label>Email</label><input type="email" id="at-email" placeholder="your@email.com"/></div>
+          <div class="auth-field"><label>Password</label><input type="password" id="at-password" placeholder="At least 6 characters"/></div>
+          <div class="auth-field"><label>School</label><input type="text" id="at-school" placeholder="Your school name"/></div>
+          <div id="at-error" class="auth-error" style="display:none"></div>
+          <button class="auth-submit" onclick="handleATSignup()">Create Account</button>
+        </div>
+        <p class="auth-switch">Already have an account? <a href="#" onclick="showAuth('login')">Log in</a> &nbsp;|&nbsp; <a href="#" onclick="showAuth('landing')">Back</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- AT DASHBOARD -->
+  <div id="at-dashboard-overlay" style="display:none">
+    <nav style="position:fixed;top:0;left:0;right:0;height:64px;background:var(--royal);display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:100;box-shadow:0 2px 16px rgba(26,61,181,0.18)">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:#fff">AT<span style="color:rgba(255,255,255,0.55)">las</span></div>
+      <div id="at-welcome-name" style="color:rgba(255,255,255,0.8);font-size:0.88rem"></div>
+      <button onclick="handleLogout()" style="background:rgba(255,255,255,0.15);color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:0.84rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Log Out</button>
+    </nav>
+    <div style="padding:100px 40px 40px;max-width:1000px;margin:0 auto">
+      <div style="margin-bottom:32px">
+        <h1 style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--text)">Your <span style="color:var(--royal)">Class Dashboard</span></h1>
+        <div style="margin-top:12px;background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:inline-block;box-shadow:var(--shadow)">
+          <div style="font-size:0.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Your Class Code — share this with your students</div>
+          <div id="at-class-code" style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--royal);letter-spacing:0.15em"></div>
+        </div>
+      </div>
+      <div id="at-students-list"><div style="color:var(--muted);font-size:0.88rem">Loading students...</div></div>
+    </div>
+  </div>
+
+<nav>
+  <div class="logo">AT<span>las</span></div>
+  <ul class="nav-links">
+    <li><a href="#" class="active" onclick="showPage('dashboard',this);return false;">Dashboard</a></li>
+    <li><a href="#" onclick="showPage('quickref',this);return false;">Quick Reference</a></li>
+  </ul>
+</nav>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Level 1 — Foundational</div>
+      <div class="sidebar-item active" onclick="startLesson('ankle')">
+        <div class="sidebar-dot" style="background:var(--royal)"></div>
+        Ankle Anatomy
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+      <div class="sidebar-item" onclick="startLesson('knee')">
+        <div class="sidebar-dot" style="background:var(--royal)"></div>
+        Knee Anatomy
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+      <div class="sidebar-item" onclick="startLesson('terminology')">
+        <div class="sidebar-dot" style="background:var(--royal)"></div>
+        Medical Terminology
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div class="sidebar-section" style="margin-top:14px">
+      <div class="sidebar-label">Level 2 — Basic Skills</div>
+      <div class="sidebar-item" style="opacity:0.4;pointer-events:none;font-style:italic">
+        <div class="sidebar-dot" style="background:var(--border)"></div>
+        Coming Soon
+      </div>
+    </div>
+    <div class="sidebar-section" style="margin-top:14px">
+      <div class="sidebar-label">Level 3 — Varsity ATs</div>
+      <div class="sidebar-item" style="opacity:0.4;pointer-events:none;font-style:italic">
+        <div class="sidebar-dot" style="background:var(--border)"></div>
+        Coming Soon
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+      <div class="dashboard-header">
+        <div class="greeting">Welcome back</div>
+        <h1>Your AT Learning <span>Dashboard</span></h1>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-num" id="stat-inprogress">0</div>
+          <div class="stat-label">Skills in progress</div>
+        </div>
+        <div class="stat-card yellow-top">
+          <div class="stat-num" id="stat-remaining">3</div>
+          <div class="stat-label">Skills remaining</div>
+        </div>
+        <div class="stat-card green-top">
+          <div class="stat-num" id="stat-completed">0</div>
+          <div class="stat-label">Skills completed</div>
+        </div>
+      </div>
+
+      <div class="section-title">Level 1 — Foundational Information for Club Members</div>
+      <div class="skill-grid">
+
+        <div class="skill-card" onclick="startLesson('ankle')" style="cursor:pointer">
+          <div class="skill-card-header">
+            <div class="skill-icon" style="background:#e8edfb;color:var(--royal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 8a3.5 3.5 0 0 0 7 0V5a1 1 0 0 0-1-1h-5a1 1 0 0 0-1 1v3z"/><path d="M8 11.5V15a5 5 0 0 0 10 0v-1"/><circle cx="18" cy="13.5" r="1.5"/></svg></div>
+            <span class="badge level1">Level 1</span>
+          </div>
+          <h3>Ankle Anatomy</h3>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
+            <div style="font-size:0.76rem;color:var(--muted)">2 sections</div>
+            <div style="font-size:0.76rem;font-weight:700;color:var(--royal)">Start Lesson →</div>
+          </div>
+          <div class="mini-progress" style="margin-top:10px"><div class="mini-fill" style="width:0%"></div></div>
+        </div>
+
+        <div class="skill-card" onclick="startLesson('knee')" style="cursor:pointer">
+          <div class="skill-card-header">
+            <div class="skill-icon" style="background:#e8edfb;color:var(--royal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 8a3.5 3.5 0 0 0 7 0V5a1 1 0 0 0-1-1h-5a1 1 0 0 0-1 1v3z"/><path d="M8 11.5V15a5 5 0 0 0 10 0v-1"/><circle cx="18" cy="13.5" r="1.5"/></svg></div>
+            <span class="badge level1">Level 1</span>
+          </div>
+          <h3>Knee Anatomy</h3>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
+            <div style="font-size:0.76rem;color:var(--muted)">6 sections</div>
+            <div style="font-size:0.76rem;font-weight:700;color:var(--royal)">Start Lesson →</div>
+          </div>
+          <div class="mini-progress" style="margin-top:10px"><div class="mini-fill" style="width:0%"></div></div>
+        </div>
+
+        <div class="skill-card" onclick="startLesson('terminology')" style="cursor:pointer">
+          <div class="skill-card-header">
+            <div class="skill-icon" style="background:#e8edfb;color:var(--royal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+            <span class="badge level1">Level 1</span>
+          </div>
+          <h3>Common Medical Terminology</h3>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
+            <div style="font-size:0.76rem;color:var(--muted)">3 sections</div>
+            <div style="font-size:0.76rem;font-weight:700;color:var(--royal)">Start Lesson →</div>
+          </div>
+          <div class="mini-progress" style="margin-top:10px"><div class="mini-fill" style="width:0%"></div></div>
+        </div>
+
+      </div>
+
+      <div class="section-title">Level 2 — Basic Skills for JV ATs</div>
+      <div class="skill-grid">
+        <div class="skill-card" style="opacity:0.45;pointer-events:none;border-style:dashed">
+          <div class="skill-card-header">
+            <div class="skill-icon" style="background:#e8edfb;color:var(--royal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            <span class="badge level2">Level 2</span>
+          </div>
+          <h3>Coming Soon</h3>
+          <p>Level 2 skills for JV ATs will be added here.</p>
+        </div>
+      </div>
+
+      <div class="section-title">Level 3 — Advanced Information for Varsity ATs</div>
+      <div class="skill-grid">
+        <div class="skill-card" style="opacity:0.45;pointer-events:none;border-style:dashed">
+          <div class="skill-card-header">
+            <div class="skill-icon" style="background:#fff8e1;color:#f59f00"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            <span class="badge level3">Level 3</span>
+          </div>
+          <h3>Coming Soon</h3>
+          <p>Level 3 skills for Varsity ATs will be added here.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK REFERENCE PAGE -->
+    <div id="page-quickref" class="page">
+      <div class="dashboard-header">
+        <h1>Quick <span>Reference</span></h1>
+        <p style="color:var(--muted);margin-top:8px;font-size:0.88rem">Everything you need fast on the sideline. No fluff.</p>
+      </div>
+
+      <div class="qr-grid">
+
+        <!-- CONCUSSION RED FLAGS -->
+        <div class="qr-card qr-red">
+          <div class="qr-card-header">
+            <div class="qr-icon" style="background:var(--royal-pale);color:var(--royal)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div>
+              <div class="qr-card-title">Concussion Red Flags</div>
+              <div class="qr-card-sub">Remove from play immediately if any present</div>
+            </div>
+          </div>
+          <div class="qr-tags">
+            <span class="qr-tag blue">Headache or pressure</span>
+            <span class="qr-tag blue">Confusion / fog</span>
+            <span class="qr-tag blue">Memory gaps</span>
+            <span class="qr-tag blue">Sensitivity to light or noise</span>
+            <span class="qr-tag blue">Balance problems</span>
+            <span class="qr-tag blue">Nausea or vomiting</span>
+            <span class="qr-tag blue">Unequal pupils</span>
+            <span class="qr-tag blue">Loss of consciousness</span>
+            <span class="qr-tag blue">Slurred speech</span>
+          </div>
+          <div class="qr-rule">When in doubt, sit them out. No exceptions.</div>
+        </div>
+
+        <!-- HEAT ILLNESS -->
+        <div class="qr-card qr-yellow">
+          <div class="qr-card-header">
+            <div class="qr-icon" style="background:var(--royal-pale);color:var(--royal)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+            </div>
+            <div>
+              <div class="qr-card-title">Heat Illness Spectrum</div>
+              <div class="qr-card-sub">Know the difference — heat stroke is life-threatening</div>
+            </div>
+          </div>
+          <div class="qr-spectrum">
+            <div class="qr-spectrum-item">
+              <div class="qr-spectrum-label" style="color:var(--text)">Heat Cramps</div>
+              <div class="qr-spectrum-desc">Painful muscle spasms, usually legs or abdomen. Still sweating. Alert and oriented.</div>
+              <div class="qr-spectrum-action">Rest, fluids, gentle stretching</div>
+            </div>
+            <div class="qr-spectrum-divider"></div>
+            <div class="qr-spectrum-item">
+              <div class="qr-spectrum-label" style="color:var(--text)">Heat Exhaustion</div>
+              <div class="qr-spectrum-desc">Heavy sweating, weakness, cold/pale/clammy skin, fast weak pulse, nausea.</div>
+              <div class="qr-spectrum-action">Cool environment, fluids, monitor closely</div>
+            </div>
+            <div class="qr-spectrum-divider"></div>
+            <div class="qr-spectrum-item">
+              <div class="qr-spectrum-label" style="color:var(--text)">Heat Stroke — above 104°F</div>
+              <div class="qr-spectrum-desc">Confusion, altered consciousness, may stop sweating. Hot red skin. This is an emergency.</div>
+              <div class="qr-spectrum-action" style="color:var(--royal);font-weight:700">Call 911. Cold water immersion immediately. Cool first, transport second.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WHEN TO CALL 911 -->
+        <div class="qr-card qr-red">
+          <div class="qr-card-header">
+            <div class="qr-icon" style="background:var(--royal-pale);color:var(--royal)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div>
+              <div class="qr-card-title">When to Call 911</div>
+              <div class="qr-card-sub">Don't hesitate — call and let EMS decide</div>
+            </div>
+          </div>
+          <div class="qr-tags">
+            <span class="qr-tag blue">Suspected heat stroke</span>
+            <span class="qr-tag blue">Loss of consciousness</span>
+            <span class="qr-tag blue">Suspected spinal injury</span>
+            <span class="qr-tag blue">Cardiac arrest / no pulse</span>
+            <span class="qr-tag blue">Seizure</span>
+            <span class="qr-tag blue">Difficulty breathing</span>
+            <span class="qr-tag blue">Uncontrolled bleeding</span>
+            <span class="qr-tag blue">Suspected fracture with deformity</span>
+            <span class="qr-tag blue">Unequal pupils after head impact</span>
+          </div>
+          <div class="qr-rule">When calling: state your location first, then what happened.</div>
+        </div>
+
+        <!-- WOUND CARE -->
+        <div class="qr-card qr-blue">
+          <div class="qr-card-header">
+            <div class="qr-icon" style="background:var(--royal-pale);color:var(--royal)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="14"/><line x1="9" y1="11" x2="15" y2="11"/></svg>
+            </div>
+            <div>
+              <div class="qr-card-title">Wound Care Steps</div>
+              <div class="qr-card-sub">For cuts and abrasions on the sideline</div>
+            </div>
+          </div>
+          <div class="qr-steps">
+            <div class="qr-step"><span class="qr-step-num">1</span><span>Gloves on before touching the wound</span></div>
+            <div class="qr-step"><span class="qr-step-num">2</span><span>Irrigate with saline or clean water — remove all debris</span></div>
+            <div class="qr-step"><span class="qr-step-num">3</span><span>Assess depth — if deep or won't stop bleeding, refer for stitches</span></div>
+            <div class="qr-step"><span class="qr-step-num">4</span><span>Apply appropriate dressing — larger pad for joints</span></div>
+            <div class="qr-step"><span class="qr-step-num">5</span><span>Secure with athletic tape or Coban — bridge across joint if needed</span></div>
+            <div class="qr-step"><span class="qr-step-num">6</span><span>Check circulation — compression should never feel tight or numb</span></div>
+          </div>
+        </div>
+
+        <!-- TAPING ANCHOR POINTS -->
+        <div class="qr-card qr-blue">
+          <div class="qr-card-header">
+            <div class="qr-icon" style="background:var(--royal-pale);color:var(--royal)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+            </div>
+            <div>
+              <div class="qr-card-title">Taping Quick Notes</div>
+              <div class="qr-card-sub">Key things to remember before you tape</div>
+            </div>
+          </div>
+          <div class="qr-steps">
+            <div class="qr-step"><span class="qr-step-num">1</span><span>Always apply pre-wrap first — protects the skin</span></div>
+            <div class="qr-step"><span class="qr-step-num">2</span><span>Ankle tape: start a few inches above the ankle bone, no wrinkles</span></div>
+            <div class="qr-step"><span class="qr-step-num">3</span><span>Wrist tape: anchor on mid-forearm, figure-8 around the wrist</span></div>
+            <div class="qr-step"><span class="qr-step-num">4</span><span>Buddy tape fingers: pad between fingers first, tape between joints — not over them</span></div>
+            <div class="qr-step"><span class="qr-step-num">5</span><span>After taping: check circulation — athlete should have normal feeling and color</span></div>
+          </div>
+        </div>
+
+        <!-- COMMON INJURY SIGNS -->
+        <div class="qr-card qr-blue">
+          <div class="qr-card-header">
+            <div class="qr-icon" style="background:var(--royal-pale);color:var(--royal)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <div>
+              <div class="qr-card-title">Common Injury Signs at a Glance</div>
+              <div class="qr-card-sub">What you'll see and what to do first</div>
+            </div>
+          </div>
+          <div class="qr-table">
+            <div class="qr-table-row header">
+              <div>What You See</div><div>Likely Injury</div><div>Do This First</div>
+            </div>
+            <div class="qr-table-row">
+              <div>Ankle rolled inward, outer side swelling</div><div>Ankle sprain</div><div>PRICE, check if they can walk</div>
+            </div>
+            <div class="qr-table-row">
+              <div>Knee buckled, pop heard, rapid swelling</div><div>Possible ACL tear</div><div>No weight bearing, get the AT</div>
+            </div>
+            <div class="qr-table-row">
+              <div>Knee pain on inner side after contact</div><div>Possible MCL sprain</div><div>PRICE, get the AT</div>
+            </div>
+            <div class="qr-table-row">
+              <div>Knee locked, athlete can't straighten it</div><div>Possible meniscus tear</div><div>No weight bearing, get the AT</div>
+            </div>
+            <div class="qr-table-row">
+              <div>Finger jammed, middle knuckle swollen</div><div>Finger sprain or fracture</div><div>If crooked, refer. If not, buddy tape</div>
+            </div>
+            <div class="qr-table-row">
+              <div>Sudden calf pain, athlete can't push off foot</div><div>Possible Achilles rupture</div><div>No weight bearing, get the AT immediately</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- LESSON PAGE -->
+    <div id="page-lesson" class="page" style="padding-bottom:80px">
+      <div id="lesson-content" style="padding-bottom:80px"></div>
+      <div class="lesson-nav">
+        <div class="lesson-nav-inner">
+          <button class="lesson-btn lesson-btn-ghost" id="lesson-back-btn" onclick="lessonBack()">← Back</button>
+          <div class="lesson-pagination">
+            <span id="lesson-page-label"></span>
+          </div>
+          <button class="lesson-btn lesson-btn-primary" id="lesson-next-btn" onclick="lessonNext()">Next →</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const skills = {
+  ankle: {
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#1a3db5" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M8 12H5a2 2 0 0 0-2 2v6h18v-6a2 2 0 0 0-2-2h-3"/><line x1="12" y1="12" x2="12" y2="22"/></svg>',
+    color: '#e8edfb',
+    title: 'Ankle Anatomy',
+    desc: 'The ankle is the most commonly injured joint in sports. Understanding its structure helps you recognize what got hurt and why — before you ever start taping or assessing.',
+    steps: [
+      { num:1, done:false, title:'Ankle Anatomy Diagram', desc:'' },
+      { num:2, done:false, title:'How to Diagnose an Ankle Sprain', desc:'' },
+    ]
+  },
+  knee: {
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#1a3db5" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>',
+    color: '#e8edfb',
+    title: 'Knee Anatomy',
+    desc: 'The knee is the largest joint in the body and one of the most complex. It deals with enormous forces in sport, making it critical for an athletic trainer to understand.',
+    steps: [
+      { num:1, done:false, title:'Knee Anatomy Diagram', desc:'' },
+      { num:2, done:false, title:'Meniscus', desc:'' },
+      { num:3, done:false, title:'ACL & PCL', desc:'' },
+      { num:4, done:false, title:'MCL & LCL', desc:'' },
+    ]
+  },
+  terminology: {
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#1a3db5" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+    color: '#e8edfb',
+    title: 'Common Medical Terminology',
+    desc: 'ATs speak a specific language. Knowing these terms means you can understand what\'s being said, communicate clearly, and sound like you know what you\'re doing — because you will.',
+    steps: [
+      { num:1, done:false, title:'Anatomical Terms', desc:'' },
+      { num:2, done:false, title:'Injury Terms', desc:'' },
+      { num:3, done:false, title:'Directional Terms', desc:'' },
+    ]
+  }
+};
+
+let prevPage = 'dashboard';
+
+function showPage(name, linkEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  if (linkEl) linkEl.classList.add('active');
+}
+
+function showSkillDetail(skillKey) {
+  const skill = skills[skillKey];
+  if (!skill) return;
+
+  const activePage = document.querySelector('.page.active');
+  if (activePage) prevPage = activePage.id.replace('page-', '');
+
+  const stepsHtml = skill.steps.map(s => `
+    <div class="step-item ${s.done ? 'done' : ''}" style="${s.embed ? 'flex-direction:column;' : ''}">
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <div class="step-num">${s.done ? `<svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>` : s.num}</div>
+        <div class="step-content">
+          <h4>${s.title}</h4>
+          <p>${s.desc}</p>
+
+        </div>
+      </div>
+      ${s.embed ? s.embed : ''}
+    </div>
+  `).join('');
+
+  document.getElementById('skill-detail-content').innerHTML = `
+    <div class="skill-detail-header">
+      <div class="skill-detail-icon" style="background:${skill.color}">${skill.icon}</div>
+      <div>
+        <h1>${skill.title}</h1>
+        <p>${skill.desc}</p>
+      </div>
+    </div>
+    <div class="section-title">Learning Steps</div>
+    <div class="steps-list">${stepsHtml}</div>
+  `;
+
+  showPage('skilldetail');
+
+  // update sidebar active
+  document.querySelectorAll('.sidebar-item').forEach(el => {
+    el.classList.toggle('active', el.getAttribute('onclick') && el.getAttribute('onclick').includes(`'${skillKey}'`));
+  });
+}
+
+
+// INJURY TERMS MATCH GAME
+const injuryMatchPairs = [
+  { term: 'Sprain',       def: 'An injury where a ligament is stretched or torn, graded 1 to 3 by severity.' },
+  { term: 'Strain',       def: 'A tear in muscle fibers from overuse or being pulled too hard, also called a pulled muscle.' },
+  { term: 'Fracture',     def: 'A broken bone, ranging from a hairline crack to a complete break.' },
+  { term: 'Contusion',    def: 'A bruise caused by a direct blow that damages blood vessels under the skin or in muscle tissue.' },
+  { term: 'Dislocation',  def: 'When the bones of a joint are pushed completely out of their normal position.' },
+  { term: 'Subluxation',  def: 'A partial dislocation where the bones are pulled apart but still touching.' },
+  { term: 'Inflammation', def: 'The body\'s healing response to injury, causing redness, swelling, warmth, and pain.' },
+  { term: 'Acute',        def: 'Sudden and short-term, resolving relatively quickly with proper care.' },
+  { term: 'Chronic',      def: 'Long-term, lasting at least 3 months to a year or for life, requiring ongoing management.' },
+  { term: '\'-itis\'',    def: 'A suffix meaning inflammation of a specific structure, such as tendinitis or bursitis.' },
+  { term: 'Laceration',   def: 'A rip or tear in body tissue, ranging from a minor nick to a deep wound.' },
+  { term: 'Abrasion',     def: 'A scrape where skin is rubbed off by friction, common in sports from falls or sliding.' },
+  { term: 'Avulsion',     def: 'A severe injury where tissue, skin, or bone is forcibly torn from its attachment point.' },
+  { term: 'Edema',        def: 'Swelling caused by fluid building up faster than it drains, most often in feet, ankles, and legs.' },
+];
+
+let injuryMatchSelected = null;
+let injuryMatchRemaining = 0;
+
+function initInjuryMatchGame() {
+  injuryMatchSelected = null;
+  injuryMatchRemaining = injuryMatchPairs.length;
+  const termsCol = document.getElementById('match-terms-injury');
+  const defsCol = document.getElementById('match-defs-injury');
+  const complete = document.getElementById('match-complete-injury');
+  const area = document.querySelector('#match-game-area-injury .match-columns');
+  if (!termsCol || !defsCol) return;
+  complete.style.display = 'none';
+  area.style.display = 'grid';
+  const shuffledTerms = shuffle(injuryMatchPairs);
+  const shuffledDefs = shuffle(injuryMatchPairs);
+  termsCol.innerHTML = '<div class="match-col-label">Terms</div>';
+  defsCol.innerHTML = '<div class="match-col-label">Definitions</div>';
+  shuffledTerms.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'match-item';
+    el.textContent = p.term;
+    el.dataset.value = p.term;
+    el.onclick = () => handleInjuryMatchClick('term', p.term, el);
+    termsCol.appendChild(el);
+  });
+  shuffledDefs.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'match-item';
+    el.textContent = p.def;
+    el.dataset.value = p.term;
+    el.onclick = () => handleInjuryMatchClick('def', p.term, el);
+    defsCol.appendChild(el);
+  });
+}
+
+function handleInjuryMatchClick(type, value, el) {
+  if (el.classList.contains('correct')) return;
+  if (!injuryMatchSelected) { injuryMatchSelected = { type, value, el }; el.classList.add('selected'); return; }
+  if (injuryMatchSelected.el === el) { el.classList.remove('selected'); injuryMatchSelected = null; return; }
+  if (injuryMatchSelected.type === type) { injuryMatchSelected.el.classList.remove('selected'); injuryMatchSelected = { type, value, el }; el.classList.add('selected'); return; }
+  const isMatch = injuryMatchSelected.value === value;
+  if (isMatch) {
+    injuryMatchSelected.el.classList.remove('selected');
+    injuryMatchSelected.el.classList.add('correct');
+    el.classList.add('correct');
+    injuryMatchSelected = null;
+    injuryMatchRemaining--;
+    if (injuryMatchRemaining === 0) {
+      setTimeout(() => {
+        document.querySelector('#match-game-area-injury .match-columns').style.display = 'none';
+        document.getElementById('match-complete-injury').style.display = 'block';
+      }, 450);
+    }
+  } else {
+    injuryMatchSelected.el.classList.remove('selected');
+    injuryMatchSelected.el.classList.add('wrong');
+    el.classList.add('wrong');
+    const prev = injuryMatchSelected.el;
+    setTimeout(() => { prev.classList.remove('wrong'); el.classList.remove('wrong'); }, 500);
+    injuryMatchSelected = null;
+  }
+}
+
+// MATCH GAME
+const matchPairs = [
+  { term: 'Muscle',    def: 'Soft tissue made of thousands of small fibers that contract and stretch to move your body and organs.' },
+  { term: 'Tendon',    def: 'A cord of strong tissue, like a rope, that connects muscle to bone and transfers the force of muscle contractions.' },
+  { term: 'Ligament',  def: 'Connective tissue that connects bone to bone, stabilizing joints.' },
+  { term: 'Bone',      def: 'Hard tissue that gives your body structure, enables movement with muscles, protects organs, and stores bone marrow.' },
+  { term: 'Nerve',     def: 'A fiber that sends electrical signals between your body and brain, enabling sensation, movement, and involuntary functions.' },
+  { term: 'Fascia',    def: 'Connective tissue throughout the body that attaches to and stabilizes every muscle, organ, and structure, allowing smooth movement.' },
+  { term: 'Cartilage', def: 'Strong, flexible connective tissue at the ends of bones that reduces friction, absorbs shock, and provides shape.' },
+  { term: 'Meniscus',  def: 'A C-shaped piece of cartilage in the knee that sits between the femur and tibia, cushioning and stabilizing the joint.' },
+  { term: 'Labrum',    def: 'A thick, cup-shaped ring of cartilage lining the shoulder and hip sockets, deepening them for stability.' },
+  { term: 'Articular', def: 'Cartilage covering the ends of bones inside joints, allowing nearly frictionless movement and absorbing shock.' },
+  { term: 'Bursa',     def: 'A small, fluid-filled sac near joints that allows tendons, muscles, and bones to glide without friction.' },
+];
+
+let matchSelected = null; // { type: 'term'|'def', value, el }
+let matchRemaining = 0;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function initMatchGame() {
+  matchSelected = null;
+  matchRemaining = matchPairs.length;
+
+  const termsCol = document.getElementById('match-terms');
+  const defsCol = document.getElementById('match-defs');
+  const complete = document.getElementById('match-complete');
+  const area = document.querySelector('.match-columns');
+  if (!termsCol || !defsCol) return;
+
+  complete.style.display = 'none';
+  area.style.display = 'grid';
+
+  const shuffledTerms = shuffle(matchPairs);
+  const shuffledDefs = shuffle(matchPairs);
+
+  termsCol.innerHTML = '<div class="match-col-label">Terms</div>';
+  defsCol.innerHTML = '<div class="match-col-label">Definitions</div>';
+
+  shuffledTerms.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'match-item';
+    el.textContent = p.term;
+    el.dataset.value = p.term;
+    el.dataset.type = 'term';
+    el.onclick = () => handleMatchClick('term', p.term, el);
+    termsCol.appendChild(el);
+  });
+
+  shuffledDefs.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'match-item';
+    el.textContent = p.def;
+    el.dataset.value = p.term; // keyed by term for matching
+    el.dataset.type = 'def';
+    el.onclick = () => handleMatchClick('def', p.term, el);
+    defsCol.appendChild(el);
+  });
+}
+
+function handleMatchClick(type, value, el) {
+  if (el.classList.contains('correct')) return;
+
+  if (!matchSelected) {
+    matchSelected = { type, value, el };
+    el.classList.add('selected');
+    return;
+  }
+
+  // Clicking the same item deselects
+  if (matchSelected.el === el) {
+    el.classList.remove('selected');
+    matchSelected = null;
+    return;
+  }
+
+  // Clicking same type — switch selection
+  if (matchSelected.type === type) {
+    matchSelected.el.classList.remove('selected');
+    matchSelected = { type, value, el };
+    el.classList.add('selected');
+    return;
+  }
+
+  // Different types — check match
+  const isMatch = matchSelected.value === value;
+
+  if (isMatch) {
+    matchSelected.el.classList.remove('selected');
+    matchSelected.el.classList.add('correct');
+    el.classList.add('correct');
+    matchSelected = null;
+    matchRemaining--;
+    if (matchRemaining === 0) {
+      setTimeout(() => {
+        document.querySelector('.match-columns').style.display = 'none';
+        document.getElementById('match-complete').style.display = 'block';
+      }, 450);
+    }
+  } else {
+    matchSelected.el.classList.remove('selected');
+    matchSelected.el.classList.add('wrong');
+    el.classList.add('wrong');
+    const prev = matchSelected.el;
+    setTimeout(() => {
+      prev.classList.remove('wrong');
+      el.classList.remove('wrong');
+    }, 500);
+    matchSelected = null;
+  }
+}
+
+
+const progress = {
+  inProgress: new Set(),
+  completed: new Set(),
+  totalModules: 3 // ankle, knee, terminology
+};
+
+function updateDashboardStats() {
+  const inProg = progress.inProgress.size;
+  const comp = progress.completed.size;
+  const remaining = progress.totalModules - comp;
+  const el_ip = document.getElementById('stat-inprogress');
+  const el_rem = document.getElementById('stat-remaining');
+  const el_comp = document.getElementById('stat-completed');
+  if (el_ip) el_ip.textContent = inProg;
+  if (el_rem) el_rem.textContent = Math.max(0, remaining);
+  if (el_comp) el_comp.textContent = comp;
+}
+
+function markModuleInProgress(key) {
+  if (!progress.completed.has(key)) {
+    progress.inProgress.add(key);
+    updateDashboardStats();
+  }
+}
+
+function markModuleComplete(key) {
+  progress.inProgress.delete(key);
+  progress.completed.add(key);
+  updateDashboardStats();
+  // Update progress bar and card
+  updateModuleCardUI(key);
+}
+
+function updateModuleCardUI(key) {
+  // Turn progress bars green for completed modules
+  document.querySelectorAll('.mini-fill').forEach(el => {
+    const card = el.closest('.skill-card');
+    if (card && card.getAttribute('onclick') && card.getAttribute('onclick').includes(key)) {
+      el.style.width = '100%';
+      el.style.background = 'var(--green)';
+    }
+  });
+  // Update sidebar dot
+  document.querySelectorAll('.sidebar-item').forEach(el => {
+    if (el.getAttribute('onclick') && el.getAttribute('onclick').includes(key)) {
+      const dot = el.querySelector('.sidebar-dot');
+      if (dot) dot.style.background = 'var(--green)';
+    }
+  });
+}
+
+
+const lessonData = {
+  ankle: {
+    title: 'Ankle Anatomy',
+    pages: [
+      // Ankle page 0 — intro
+      {
+        type: 'intro',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header">
+              <span class="lesson-step-tag">Ankle Anatomy</span>
+            </div>
+            <h1><span>Ankle Anatomy</span></h1>
+            <p>The ankle is the most commonly injured joint in sports. Understanding the ligaments and how ankle sprains happen is one of the most practical things you can learn as a student AT.</p>
+            <p>The lesson is divided into two sections:</p>
+            <div class="lesson-sections">
+              <div class="lesson-section-pill"><div class="lesson-section-pill-num">1</div><span>Ankle Anatomy Diagram</span></div>
+              <div class="lesson-section-pill"><div class="lesson-section-pill-num">2</div><span>How to Diagnose an Ankle Sprain</span></div>
+            </div>
+          </div>`
+      },
+      // Ankle page 1 — Lateral ligaments
+      {
+        type: 'step',
+        stepNum: 1,
+        title: 'Ankle Anatomy Diagram',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header">
+              <span class="lesson-step-tag">Section 1 of 2</span>
+            </div>
+            <h1><span>Ankle Anatomy Diagram</span></h1>
+            <p>When someone sprains their ankle, it most often involves the foot turning inward (inversion). This typically strains the lateral ligaments of the ankle, with the anterior talofibular ligament (ATFL) being the most commonly injured, followed by the calcaneofibular ligament (CFL). The posterior talofibular ligament (PTFL) is rarely affected in standard ankle sprains.</p>
+            <p style="margin-top:12px">These structures are shown in the Lateral Ligaments diagram below.</p>
+            <div class="lesson-image-block" style="margin-top:16px">
+              <img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Lateral%20Ankle%20Ligaments.webp" alt="Lateral ligaments of the ankle showing ATFL, CFL, PTFL, AITFL, and PITFL" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/>
+              <div class="lesson-image-credit">Image: Cleveland Clinic</div>
+            </div>
+            <div class="lesson-image-block" style="margin-top:16px">
+              <img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Medial%20Ankle%20Ligaments.webp" alt="Medial ligaments of the ankle showing ATTL, TNL, TCL, and PTTL" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/>
+              <div class="lesson-image-credit">Image: Cleveland Clinic © 2024</div>
+            </div>
+          </div>`
+      },
+      // Ankle page 2 — Anterior Drawer Test
+      {
+        type: 'step',
+        stepNum: 2,
+        title: 'How to Diagnose an Ankle Sprain',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header">
+              <span class="lesson-step-tag">Section 2 of 2</span>
+            </div>
+            <h1><span>How to Diagnose an Ankle Sprain</span></h1>
+            <p>The most common test to diagnose whether the ATFL has been injured is the Anterior Drawer Test, shown in the video below.</p>
+            <div class="lesson-video-embed" style="margin-top:20px">
+              <iframe width="100%" height="315" src="https://www.youtube.com/embed/kgp7pxiQ2eY" title="Anterior Drawer Test — MSK Medicine" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius:8px"></iframe>
+              <div class="lesson-image-credit" style="margin-top:6px">Video: MSK Medicine — Anterior Drawer Test</div>
+            </div>
+          </div>`
+      },
+    ]
+  },
+  knee: {
+    title: 'Knee Anatomy',
+    pages: [
+      {
+        type: 'intro',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header"><span class="lesson-step-tag">Knee Anatomy</span></div>
+            <h1><span>Knee Anatomy</span></h1>
+            <p>The knee is the biggest joint in the body, and almost any movement that uses your legs relies on your knees. This makes it critical for an athletic trainer to understand how it works.</p>
+            <p>The lesson is divided into six sections:</p>
+            <div class="lesson-sections">
+              <div class="lesson-section-pill"><div class="lesson-section-pill-num">1</div><span>Knee Anatomy Diagram</span></div>
+              <div class="lesson-section-pill"><div class="lesson-section-pill-num">2</div><span>Bones</span></div>
+              <div class="lesson-section-pill"><div class="lesson-section-pill-num">3</div><span>Ligaments</span></div>
+              <div class="lesson-section-pill"><div class="lesson-section-pill-num">4</div><span>Meniscus</span></div>
+              <div class="lesson-section-pill"><div class="lesson-section-pill-num">5</div><span>Tendons</span></div>
+              <div class="lesson-section-pill"><div class="lesson-section-pill-num">6</div><span>Bursa</span></div>
+            </div>
+          </div>`
+      },
+      {
+        type: 'step', stepNum: 1, title: 'Knee Anatomy Diagram',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header"><span class="lesson-step-tag">Section 1 of 6</span></div>
+            <h1 style="font-size:2.4rem"><span>Knee</span></h1>
+            <div class="lesson-image-block" style="margin-top:14px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/total%20knee%20overall%20diagram.webp" alt="Knee anatomy cartoon diagram showing all major structures" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: <a href="https://matthewprovenchermd.com/knee-anatomy-joint-vail-aspen-denver-co/" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Matthew Provencher MD</a></div></div>
+          </div>`
+      },
+      {
+        type: 'step', stepNum: 2, title: 'Bones',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header"><span class="lesson-step-tag">Section 2 of 6 — Bones</span></div>
+            <h1><span>Bones</span></h1>
+            <p style="color:var(--muted);font-size:0.88rem;margin-bottom:16px">There are 4 main bones to know in the knee: the femur, tibia, fibula, and patella.</p>
+            <div class="lesson-image-block" style="margin-top:14px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/knee%20bones.webp" alt="Diagram showing the four bones of the knee joint" style="max-width:60%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: <a href="https://www.csog.net/anatomy-of-the-knee/" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Colorado Springs Orthopaedic Group</a></div></div>
+            <div class="lesson-term" style="margin-top:20px">
+              <div class="lesson-term-name">Femur</div>
+              <div class="lesson-term-def">The femur is the thigh bone and forms the top part of the knee joint.<br><br><strong>Function:</strong> Transfers body weight through the leg (each femur supports about 45% of your body weight when standing), and is important in knee flexion and extension.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Tibia</div>
+              <div class="lesson-term-def">The tibia is the main lower leg bone that connects to the knee.<br><br><strong>Function:</strong> Main weight-bearing bone below the knee. Moves forward/back during ACL injuries. Where the patellar tendon attaches.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Fibula</div>
+              <div class="lesson-term-def">The fibula is the smaller bone on the outside of the lower leg.<br><br><strong>Function:</strong> Helps stabilize the outside of the knee. Attachment point for ligaments on the outside of the knee.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Patella</div>
+              <div class="lesson-term-def">The patella, or kneecap, sits in front of the knee joint.<br><br><strong>Function:</strong> Protects the front of the knee joint. Helps the thigh muscles straighten the leg more efficiently. Common site of pain or dislocation.</div>
+            </div>
+          </div>`
+      },
+      {
+        type: 'step', stepNum: 3, title: 'Ligaments — ACL & PCL',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header"><span class="lesson-step-tag">Section 3 of 6 — Ligaments</span></div>
+            <h1><span>Ligaments</span></h1>
+            <p>The <strong>ACL</strong> prevents the tibia from sliding too far forward and helps control rotational stability in the knee, while the <strong>PCL</strong> keeps the tibia from moving backward behind the femur. If either is torn, this can be assessed by pushing and pulling on the tibia and observing its movement.</p>
+            <div class="lesson-term" style="margin-top:20px">
+              <div class="lesson-term-name">Lachman Test — ACL</div>
+              <div class="lesson-term-def">The Lachman Test is used to diagnose an ACL tear.</div>
+              <a href="https://www.youtube.com/watch?v=ZvneZlW7O5s" target="_blank" class="yt-btn"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M8 5v14l11-7z"/></svg>Watch: Lachman Test — FIFA Medical Network</a>
+            </div>
+            <div class="lesson-term" style="margin-top:16px">
+              <div class="lesson-term-name">Posterior Drawer Test — PCL</div>
+              <div class="lesson-term-def">The Posterior Drawer Test is used to diagnose a PCL tear.</div>
+              <a href="https://www.youtube.com/watch?v=ZvneZlW7O5s" target="_blank" class="yt-btn"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M8 5v14l11-7z"/></svg>Watch: Posterior Drawer Test — FIFA Medical Network</a>
+            </div>
+            <div class="lesson-image-block" style="margin-top:14px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/knee%20ligaments.webp" alt="Diagram showing ACL, PCL, MCL, LCL and meniscus in the knee" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: <a href="https://www.csog.net/anatomy-of-the-knee/" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Colorado Springs Orthopaedic Group</a></div></div>
+          </div>`
+      },
+      {
+        type: 'step', stepNum: 3, title: 'Ligaments — MCL & LCL',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header"><span class="lesson-step-tag">Section 3 of 6 — Ligaments continued</span></div>
+            <h1><span>Ligaments</span> <span style="font-size:1rem;color:var(--muted);font-weight:500">continued</span></h1>
+            <p>The <strong>MCL</strong> and <strong>LCL</strong> stabilize the knee by limiting excessive side-to-side movement. The MCL resists forces from the outside of the knee, while the LCL resists forces from the inside.</p>
+            <div class="lesson-term" style="margin-top:20px">
+              <div class="lesson-term-name">Valgus Stress Test — MCL</div>
+              <div class="lesson-term-def">Used to diagnose an MCL injury.</div>
+              <a href="https://www.youtube.com/watch?v=qtL1Oz0QqB0" target="_blank" class="yt-btn"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M8 5v14l11-7z"/></svg>Watch: Valgus Stress Test — FIFA Medical Network</a>
+            </div>
+            <div class="lesson-term" style="margin-top:16px">
+              <div class="lesson-term-name">Varus Stress Test — LCL</div>
+              <div class="lesson-term-def">Similar to the Valgus Stress Test, but force is applied inward (medially) at the knee instead of outward, causing the knee to bend outward.</div>
+            </div>
+            <div class="lesson-image-block" style="margin-top:14px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/knee%20ligaments.webp" alt="Diagram showing the MCL and LCL ligaments in the knee" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: <a href="https://www.csog.net/anatomy-of-the-knee/" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Colorado Springs Orthopaedic Group</a></div></div>
+          </div>`
+      },
+      {
+        type: 'step', stepNum: 4, title: 'Meniscus',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header"><span class="lesson-step-tag">Section 4 of 6 — Meniscus</span></div>
+            <h1><span>Meniscus</span></h1>
+            <p>To better understand the meniscus, along with the symptoms, diagnosis, and treatment options for related injuries, watch the following video from the Mayo Clinic.</p>
+            <div class="lesson-video-embed" style="margin-top:20px">
+              <iframe width="100%" height="315" src="https://www.youtube.com/embed/kyx3lEgQTj0" title="Meniscus tear — Mayo Clinic" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius:8px"></iframe>
+              <div class="lesson-image-credit" style="margin-top:6px">Video: Mayo Clinic — Meniscus Tear</div>
+            </div>
+          </div>`
+      },
+      {
+        type: 'step', stepNum: 5, title: 'Tendons',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header"><span class="lesson-step-tag">Section 5 of 6 — Tendons</span></div>
+            <h1><span>Tendons</span></h1>
+            <p style="color:var(--muted);font-size:0.88rem;margin-bottom:16px">The 3 most important tendons that affect knee movement are the quadriceps tendon, patellar tendon, and hamstring tendons.</p>
+            <div class="lesson-image-block" style="margin-top:14px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/knee%20tendons.webp" alt="Diagram showing quad, patellar, and hamstring tendons of the knee" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: <a href="https://crossoversymmetry.com/blogs/advice-for-pain-injury/the-quick-guide-to-understanding-how-your-knee-works" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Crossover Symmetry</a></div></div>
+            <div class="lesson-term" style="margin-top:20px">
+              <div class="lesson-term-name">Quadriceps Tendon</div>
+              <div class="lesson-term-def">The quadriceps tendon connects the quadriceps muscles to the patella.<br><br><strong>Function:</strong> As the quadriceps muscles contract, this tendon helps initiate movement within the patella.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Patellar Tendon</div>
+              <div class="lesson-term-def">The patellar tendon connects the bottom of the patella to the tibia, making it technically a ligament.<br><br><strong>Function:</strong> Transmits the force from the quadriceps muscles all the way down the leg, allowing you to straighten your leg and enabling activities like walking, running, and jumping. It is one of the most injured tendons especially amongst people who frequently run or jump on hard surfaces.<br><br><strong>Patellar Tendonitis</strong> happens when repeated movements (like jumping) gradually weaken the patellar tendon and cause tiny tears in the tissue, resulting in inflammation, tenderness, and a dull ache at the front of the knee.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Hamstring Tendons</div>
+              <div class="lesson-term-def">Hamstring tendons connect the hamstring muscles to your pelvic and lower leg bones behind the knee.<br><br><strong>Function:</strong> These tendons allow for flexion and extension of the leg, and they control deceleration and slow down the forward swinging of the leg when running or walking.</div>
+            </div>
+          </div>`
+      },
+      {
+        type: 'step', stepNum: 6, title: 'Bursa',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header"><span class="lesson-step-tag">Section 6 of 6 — Bursa</span></div>
+            <h1><span>Bursa</span></h1>
+            <p>The prepatellar bursa is a small, fluid-filled sac located directly in front of the patella (kneecap), positioned right between the bone and the skin. Its primary job is to drastically reduce friction, allowing the skin to glide smoothly and freely over the hard kneecap during flexion and extension.</p>
+            <div style="display:flex;gap:14px;margin-top:20px;flex-wrap:wrap;align-items:flex-start">
+              <div style="flex:1;min-width:180px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Patient%20inflamed%20bursa.webp" alt="Photo of inflamed prepatellar bursa on a patient knee" style="max-width:100%;border-radius:8px;border:1px solid var(--border)"/></div>
+              <div style="flex:1;min-width:180px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/bursitis%20diagram.webp" alt="Medical diagram showing prepatellar bursitis" style="max-width:100%;border-radius:8px;border:1px solid var(--border)"/></div>
+            </div>
+            <div class="lesson-image-credit" style="margin-top:8px">Image of inflamed bursa on the right side. Left: Image: <a href="https://flawlessphysio.co.uk/housemaids-knee-prepatellar-bursitis/" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Flawless Physio</a> | Right: Cleveland Clinic © 2025</div>
+          </div>`
+      },
+    ]
+  },
+
+    terminology: {
+    title: 'Common Medical Terminology',
+    pages: [
+      // Page 0 — intro
+      {
+        type: 'intro',
+        render: () => `
+          <div class="lesson-body">
+            <h1>Welcome to <span>Common Medical Terminology</span></h1>
+            <p>In this lesson, you'll learn the key terms used in the athletic training (AT) room to help you communicate effectively and better understand what others are describing.</p>
+            <p>The lesson is divided into three sections:</p>
+            <div class="lesson-sections">
+              <div class="lesson-section-pill"><div class="lesson-section-pill-num">1</div><span>Anatomical Terms</span></div>
+              <div class="lesson-section-pill"><div class="lesson-section-pill-num">2</div><span>Injury Terms</span></div>
+              <div class="lesson-section-pill"><div class="lesson-section-pill-num">3</div><span>Directional Terms</span></div>
+            </div>
+          </div>`
+      },
+      // Page 1a — Anatomical Terms: Muscle, Tendon, Ligament, Bone, Nerve
+      {
+        type: 'step',
+        stepNum: 1,
+        title: 'Anatomical Terms',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header">
+              <span class="lesson-step-tag">Section 1 of 3</span>
+            </div>
+            <h1><span>Anatomical Terms</span></h1>
+            <p style="color:var(--muted);font-size:0.88rem;margin-bottom:28px">These are the foundational structures you'll hear about every day in the AT room. Learn what each one is and what it does.</p>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Muscle</div>
+              <div class="lesson-term-def">Muscles are pieces of soft tissue throughout your body. They are made of thousands of small fibers woven together that stretch and press together to move your organs or body.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Tendon</div>
+              <div class="lesson-term-def">A tendon is a cord of strong, flexible tissue, similar to a rope. Tendons connect your muscles to your bones, and when you squeeze a muscle, the tendon pulls the attached bone, causing your limbs to move. They also help prevent muscle injury by absorbing some of the impact your muscles take when you run, jump, or do other movements.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Ligament</div>
+              <div class="lesson-term-def">Ligaments are connective tissues that connect bones to other bones.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Bone</div>
+              <div class="lesson-term-def">Bones are your body's main form of structural support. They're made of hard, strong tissue that gives your body its shape and helps you move. Bones protect internal organs, contain and protect bone marrow, and secure and support important tissues, such as muscles and nerves.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Nerve</div>
+              <div class="lesson-term-def">Nerves send electrical signals from one part of your body to the brain. These electrical impulses help you feel sensations and move your muscles. They also maintain certain autonomic functions like breathing, sweating, or digesting food.</div>
+            </div>
+            <div class="lesson-image-block" style="margin-top:20px">
+              <img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Tendon%20v%20Ligament.webp" alt="Diagram showing the difference between tendons and ligaments in the ankle" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/>
+              <div class="lesson-image-credit">Image: <a href="https://www.birlahospital.com/difference-between-tendons-and-ligaments/" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Sujata Birla Hospital & Medical Research Center</a></div>
+            </div>
+            <div class="lesson-attribution">Information referenced from the <a href="https://my.clevelandclinic.org" target="_blank">Cleveland Clinic</a></div>
+          </div>`
+      },
+      // Page 1b — Anatomical Terms: Fascia, Bursa
+      {
+        type: 'step',
+        stepNum: 1,
+        title: 'Anatomical Terms (continued)',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header">
+              <span class="lesson-step-tag">Section 1 of 3 — continued</span>
+            </div>
+            <h1><span>Anatomical Terms</span> <span style="font-size:1rem;color:var(--muted);font-weight:500">continued</span></h1>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Fascia</div>
+              <div class="lesson-term-def">Fascia is located throughout the inside of your body, attaching to and stabilizing every muscle, tendon, ligament, bone, organ, and tissue in your body. It holds your muscles together, which allows them to contract and stretch. Additionally, it provides a smooth surface for your muscles, joints, and organs to slide against each other without creating any friction or tears.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Bursa</div>
+              <div class="lesson-term-def">Bursae are small fluid-filled sacs located primarily around joints, allowing tendons, muscle, and bone to move together without friction.</div>
+            </div>
+            <div class="lesson-attribution">Information referenced from the <a href="https://my.clevelandclinic.org" target="_blank">Cleveland Clinic</a></div>
+          </div>`
+      },
+      // Page 1c — Anatomical Terms: Cartilage (Meniscus, Labrum, Articular)
+      {
+        type: 'step',
+        stepNum: 1,
+        title: 'Anatomical Terms (continued)',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header">
+              <span class="lesson-step-tag">Section 1 of 3 — continued</span>
+            </div>
+            <h1><span>Anatomical Terms</span> <span style="font-size:1rem;color:var(--muted);font-weight:500">continued</span></h1>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Cartilage</div>
+              <div class="lesson-term-def">Cartilage is a strong, flexible connective tissue located at the end of bones to reduce friction between them and to absorb shock. Cartilage is also the main tissue in some parts of your body (like your nose) and gives them their structure and shape.</div>
+            </div>
+            <div class="lesson-subterm">
+              <div class="lesson-subterm-name">Meniscus</div>
+              <div class="lesson-term-def">The meniscus is a C-shaped piece of cartilage in the knee, sitting between the femur (thighbone) and tibia (shinbone), to act as a shock-absorber for the knee. It is often torn after a hard twist or rotation of the knee.</div>
+              <div class="lesson-image-block">
+                <img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Meniscus%20and%20Torn%20Meniscus.webp" alt="Torn meniscus diagram" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/>
+                <div class="lesson-image-credit">Image: Cleveland Clinic © 2023</div>
+              </div>
+            </div>
+            <div class="lesson-subterm">
+              <div class="lesson-subterm-name">Labrum</div>
+              <div class="lesson-term-def">The labrum is a thick, cup-shaped ring of cartilage that lines and reinforces the shallow ball-and-socket joints of the shoulder and hip. It acts as a gasket to improve stability and deepen the socket, and serves as an attachment point for ligaments and tendons, aiding in joint motion.</div>
+              <div class="lesson-image-block">
+                <img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Labrum.webp" alt="Shoulder labrum anatomy diagram" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/>
+                <div class="lesson-image-credit">Image: Hospital for Special Surgery (HSS) © 2024</div>
+              </div>
+            </div>
+            <div class="lesson-subterm">
+              <div class="lesson-subterm-name">Articular Cartilage</div>
+              <div class="lesson-term-def">Articular cartilage covers the ends of bones within joints, allowing them to glide over each other with very low friction. It acts as a shock absorber and cushions the joint, but it has no blood supply or nerves, limiting its ability to repair itself after injury.</div>
+              <div class="lesson-image-block">
+                <img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Articular%20Cartilage.webp" alt="Articular cartilage diagram" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/>
+                <div class="lesson-image-credit">Image: <a href="https://kerlanjobe.org/articular-cartilage-injury/" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Kerlan Jobe Orthopaedic Clinic</a></div>
+              </div>
+            </div>
+            <div class="lesson-attribution">Information referenced from the <a href="https://my.clevelandclinic.org" target="_blank">Cleveland Clinic</a></div>
+          </div>`
+      },
+
+      // Page 1d — Match Game
+      {
+        type: 'game',
+        title: 'Match Game',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header">
+              <span class="lesson-step-tag">Section 1 of 3 — review</span>
+            </div>
+            <h1>Terms <span>Match Game</span></h1>
+            <div class="match-instructions">
+              <strong>How to play:</strong> Click a term on the left, then click its matching definition on the right. If correct, both disappear. Match all pairs to win!
+            </div>
+            <div id="match-game-area">
+              <div class="match-columns">
+                <div class="match-col" id="match-terms"></div>
+                <div class="match-col" id="match-defs"></div>
+              </div>
+              <div id="match-complete" style="display:none">
+                <div class="match-complete-msg">
+                  <div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--royal);margin-bottom:8px">All matched!</div>
+                  <div style="font-size:0.88rem;color:var(--muted);margin-bottom:20px">Great work — you matched every term and definition.</div>
+                  <button onclick="initMatchGame()" style="background:var(--royal);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">Play Again</button>
+                </div>
+              </div>
+            </div>
+          </div>`,
+        onMount: () => { setTimeout(initMatchGame, 50); }
+      },
+      // Page 2a — Injury Terms: Sprain & Strain
+      {
+        type: 'step',
+        stepNum: 2,
+        title: 'Injury Terms',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header">
+              <span class="lesson-step-tag">Section 2 of 3</span>
+            </div>
+            <h1><span>Injury Terms</span></h1>
+            <p style="color:var(--muted);font-size:0.88rem;margin-bottom:28px">These are the most common injury types you will encounter in athletic training. Understanding what each term means helps you communicate accurately about what happened to an athlete.</p>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Sprain</div>
+              <div class="lesson-term-def">A sprain is an injury that happens when one of your ligaments is stretched or torn. There are 3 degrees of sprains:<br><br>
+                <strong>Grade 1 (Mild)</strong> — very little or no tearing in the ligament.<br>
+                <strong>Grade 2 (Moderate)</strong> — the ligament is partially torn, but not all the way through.<br>
+                <strong>Grade 3 (Severe)</strong> — the ligament is completely torn.
+              </div>
+              <div class="lesson-image-block" style="margin-top:14px">
+                <img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Sprain%20Grades.webp" alt="Diagram showing Grade 1, 2, and 3 ankle sprains with lateral ligament detail" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/>
+                <div class="lesson-image-credit">Image: Cleveland Clinic © 2023</div>
+              </div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Strain</div>
+              <div class="lesson-term-def">A strain (also called a pulled muscle) is a tear in the muscle fibers. You can strain a muscle by pulling it too hard or using it too much, which weakens the fibers. Like sprains, strains also have 3 grades, but they are defined with respect to tearing of the muscle instead of tearing of the ligaments.</div>
+              <div class="lesson-image-block" style="margin-top:14px">
+                <img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Strain%20Grades.webp" alt="Diagram showing Grade 1, 2, and 3 muscle strains in the groin muscles" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/>
+                <div class="lesson-image-credit">Image: Cleveland Clinic © 2024</div>
+              </div>
+            </div>
+            <div class="lesson-attribution">Information referenced from the <a href="https://my.clevelandclinic.org" target="_blank">Cleveland Clinic</a></div>
+          </div>`
+      },
+      // Page 2b — Injury Terms: Fracture, Contusion, Dislocation, Subluxation
+      {
+        type: 'step',
+        stepNum: 2,
+        title: 'Injury Terms (continued)',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header">
+              <span class="lesson-step-tag">Section 2 of 3 — continued</span>
+            </div>
+            <h1><span>Injury Terms</span> <span style="font-size:1rem;color:var(--muted);font-weight:500">continued</span></h1>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Fracture</div>
+              <div class="lesson-term-def">A fracture is the medical term for a broken bone. It can range from a small crack (stress fracture) to a complete break where the bone separates into pieces. Fractures are caused by traumas like falls, car accidents, and sports injuries, but can also result from repetitive stress. Signs include sharp pain, swelling, bruising, and sometimes a visible deformity at the injury site.</div>
+              <div class="lesson-image-block" style="margin-top:14px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Fractures.webp" alt="Types of bone fractures including comminuted, transverse, compound, and spiral" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: Cleveland Clinic © 2025</div></div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Contusion</div>
+              <div class="lesson-term-def">A contusion is the medical term for a bruise. It happens when a direct blow damages blood vessels under the skin or within a muscle, causing blood to pool in the tissue. This results in pain, swelling, and stiffness in the affected area, even though the skin is not broken. In the case of a muscle contusion, you cannot see it like you would with a skin bruise.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Dislocation</div>
+              <div class="lesson-term-def">A dislocation describes when bones in one of your joints are pushed out of their usual place. They can affect any joint in your body and can also strain or tear the tissues around your joints, including muscles, nerves, tendons, and blood vessels.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Subluxation</div>
+              <div class="lesson-term-def">A subluxation is a partial dislocation. This means that the joint is pulled apart and the bones still touch, just not as completely as usual.</div>
+            </div>
+            <div class="lesson-image-block" style="margin-top:14px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Subluxation%20v%20Dislocation.webp" alt="Diagram showing healthy kneecap, subluxated kneecap, and dislocated kneecap" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: Cleveland Clinic © 2024</div></div>
+            <div class="lesson-attribution">Information referenced from the <a href="https://my.clevelandclinic.org" target="_blank">Cleveland Clinic</a></div>
+          </div>`
+      },
+      // Page 2c — Injury Terms: Inflammation, Acute, Chronic, -itis
+      {
+        type: 'step',
+        stepNum: 2,
+        title: 'Injury Terms (continued)',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header">
+              <span class="lesson-step-tag">Section 2 of 3 — continued</span>
+            </div>
+            <h1><span>Injury Terms</span> <span style="font-size:1rem;color:var(--muted);font-weight:500">continued</span></h1>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Inflammation</div>
+              <div class="lesson-term-def">Inflammation is a normal part of the body's response to injuries and illnesses. An inflammatory response from the immune system sends cells to the injured area to start healing injured tissue, causing the classic signs: redness or discoloration, swelling, warmth, and pain. Inflammation is a normal and necessary part of healing, but too much of it can cause problems.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Acute</div>
+              <div class="lesson-term-def">Acute means sudden and short-term. An acute injury typically happens quickly and resolves relatively fast (days to weeks) with proper care.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Chronic</div>
+              <div class="lesson-term-def">Chronic means long-term, typically referring to a condition that lasts at least 3 months to a year or for a lifetime. These conditions are generally slow-progressing, frequently incurable, and require ongoing management.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">"-itis"</div>
+              <div class="lesson-term-def">The suffix "-itis" means inflammation of a specific structure. For example:<br><br>
+                <strong>Tendinitis</strong> — inflammation of a tendon<br>
+                <strong>Bursitis</strong> — inflammation of a bursa<br>
+                <strong>Arthritis</strong> — inflammation of a joint<br>
+                <strong>Plantar fasciitis</strong> — inflammation of the fascia on the bottom of the foot<br><br>
+                When you hear a term ending in "-itis," you immediately know the structure is inflamed.
+              </div>
+            </div>
+            <div class="lesson-attribution">Information referenced from the <a href="https://my.clevelandclinic.org" target="_blank">Cleveland Clinic</a></div>
+          </div>`
+      },
+      // Page 2d — Injury Terms: Laceration, Abrasion, Avulsion, Edema
+      {
+        type: 'step',
+        stepNum: 2,
+        title: 'Injury Terms (continued)',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header">
+              <span class="lesson-step-tag">Section 2 of 3 — continued</span>
+            </div>
+            <h1><span>Injury Terms</span> <span style="font-size:1rem;color:var(--muted);font-weight:500">continued</span></h1>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Laceration</div>
+              <div class="lesson-term-def">Lacerations are injuries that involve rips or tears (cuts) in your body's tissues. They can be minor, like nicks from shaving or paper cuts, but when they're larger or deeper, they can be much more serious.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Abrasion</div>
+              <div class="lesson-term-def">An abrasion is a scrape on the skin that happens when the skin rubs off, only affecting the outermost layers of your skin. These are common in sports from falls or sliding on a surface, and may bleed slightly and hurt.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Avulsion</div>
+              <div class="lesson-term-def">An avulsion is a severe injury where body tissue, skin, or bone is forcibly torn away from its normal attachment point. Avulsion fractures are especially common, occurring when a tendon or ligament attached to a bone pulls so hard it tears a small piece of the bone away with it.</div>
+              <div class="lesson-image-block" style="margin-top:14px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Avulsion.webp" alt="X-ray showing an avulsion fracture at a finger joint" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: Cleveland Clinic</div></div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Edema</div>
+              <div class="lesson-term-def">An edema occurs when fluid builds up faster in parts of your body than it can drain out, causing swelling. It happens most often in your feet, ankles, and legs, but can affect other body parts too, like your face, hands, and belly.</div>
+              <div class="lesson-image-block" style="margin-top:14px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Edema.webp" alt="Diagram showing normal and swollen hand and foot due to edema" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: Cleveland Clinic © 2026</div></div>
+            </div>
+            <div class="lesson-attribution">Information referenced from the <a href="https://my.clevelandclinic.org" target="_blank">Cleveland Clinic</a></div>
+          </div>`
+      },
+      // Page 2e — Injury Terms Match Game
+      {
+        type: 'game',
+        title: 'Injury Terms Match Game',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header">
+              <span class="lesson-step-tag">Section 2 of 3 — review</span>
+            </div>
+            <h1>Injury Terms <span>Match Game</span></h1>
+            <div class="match-instructions">
+              <strong>How to play:</strong> Click a term on the left, then click its matching definition on the right. If correct, both disappear. Match all pairs to win!
+            </div>
+            <div id="match-game-area-injury">
+              <div class="match-columns">
+                <div class="match-col" id="match-terms-injury"></div>
+                <div class="match-col" id="match-defs-injury"></div>
+              </div>
+              <div id="match-complete-injury" style="display:none">
+                <div class="match-complete-msg">
+                  <div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--royal);margin-bottom:8px">All matched!</div>
+                  <div style="font-size:0.88rem;color:var(--muted);margin-bottom:20px">Great work — you matched every injury term and definition.</div>
+                  <button onclick="initInjuryMatchGame()" style="background:var(--royal);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">Play Again</button>
+                </div>
+              </div>
+            </div>
+          </div>`,
+        onMount: () => { setTimeout(initInjuryMatchGame, 50); }
+      },
+
+      // Page 3a — Directional Terms: Superior/Inferior, Medial/Lateral, Anterior/Posterior, Proximal/Distal
+      {
+        type: 'step',
+        stepNum: 3,
+        title: 'Directional Terms',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header">
+              <span class="lesson-step-tag">Section 3 of 3</span>
+            </div>
+            <h1><span>Directional Terms</span></h1>
+            <p style="color:var(--muted);font-size:0.88rem;margin-bottom:24px">These terms describe where structures are located relative to the body. You'll hear them constantly when an AT describes an injury location.</p>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Superior / Inferior</div>
+              <div class="lesson-term-def"><strong>Superior</strong> means towards the head or above. <strong>Inferior</strong> means towards the feet or below. Example: the knee is inferior to the hip.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Medial / Lateral</div>
+              <div class="lesson-term-def"><strong>Medial</strong> means towards the inside (midline of the body). <strong>Lateral</strong> means towards the outside. Example: the MCL is on the medial side of the knee.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Anterior / Posterior</div>
+              <div class="lesson-term-def"><strong>Anterior</strong> means towards the front of the body. <strong>Posterior</strong> means towards the back. Example: the ACL prevents the tibia from moving anterior to the femur.</div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Proximal / Distal</div>
+              <div class="lesson-term-def"><strong>Proximal</strong> means closer to the trunk or body. <strong>Distal</strong> means farther from the trunk. Example: the knee is distal to the hip but proximal to the ankle.</div>
+            </div>
+            <div class="lesson-image-block" style="margin-top:18px">
+              <img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Antomical%20Directional%20Terms.webp" alt="Diagram showing superior, inferior, medial, lateral, anterior, posterior, proximal, and distal directions on a human body" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/>
+              <div class="lesson-image-credit">Image: Created by ATlas</div>
+            </div>
+            <div class="lesson-attribution">Information referenced from the <a href="https://my.clevelandclinic.org" target="_blank">Cleveland Clinic</a></div>
+          </div>`
+      },
+      // Page 3b — Directional Terms: Movement terms
+      {
+        type: 'step',
+        stepNum: 3,
+        title: 'Directional Terms (continued)',
+        render: () => `
+          <div class="lesson-body">
+            <div class="lesson-step-header">
+              <span class="lesson-step-tag">Section 3 of 3 — continued</span>
+            </div>
+            <h1><span>Directional Terms</span> <span style="font-size:1rem;color:var(--muted);font-weight:500">movement</span></h1>
+            <p style="color:var(--muted);font-size:0.88rem;margin-bottom:20px">These terms describe how joints and body segments move. You'll use them when describing range of motion and mechanisms of injury.</p>
+
+            <div class="lesson-term">
+              <div class="lesson-term-name">Flexion / Extension</div>
+              <div class="lesson-term-def"><strong>Flexion</strong> is movement at a joint that decreases the angle between two bones (bending). <strong>Extension</strong> increases the angle (straightening).</div>
+              <div class="lesson-image-block" style="margin-top:12px;margin-bottom:4px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Extention%20v%20Flexion.webp" alt="Diagram showing flexion and extension at the knee joint" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: <a href="https://musculoskeletalkey.com/functional-musculoskeletal-anatomy/" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Musculoskeletal Key</a></div></div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Supination / Pronation</div>
+              <div class="lesson-term-def"><strong>Supination</strong> is outward rotation of the forearm so the palm faces forward (anterior). <strong>Pronation</strong> is inward rotation so the palm faces backward (posterior).</div>
+              <div class="lesson-image-block" style="margin-top:12px;margin-bottom:4px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Pronation%20v%20Supination.webp" alt="Diagram showing pronation and supination of the forearm at the elbow" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: <a href="https://musculoskeletalkey.com/functional-musculoskeletal-anatomy/" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Musculoskeletal Key</a></div></div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Abduction / Adduction</div>
+              <div class="lesson-term-def"><strong>Abduction</strong> is movement away from the midline of the body. <strong>Adduction</strong> is movement towards the midline.</div>
+              <div class="lesson-image-block" style="margin-top:12px;margin-bottom:4px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Abduction%20v%20Adduction.webp" alt="Diagram showing abduction and adduction of the leg at the hip" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: <a href="https://musculoskeletalkey.com/functional-musculoskeletal-anatomy/" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Musculoskeletal Key</a></div></div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Internal / External Rotation</div>
+              <div class="lesson-term-def"><strong>Internal rotation</strong> turns the bone towards the midline of the body. <strong>External rotation</strong> turns it away from the midline.</div>
+              <div class="lesson-image-block" style="margin-top:12px;margin-bottom:4px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Internal%20v%20External%20Rotation.webp" alt="Diagram showing internal and external rotation of the shoulder" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: <a href="https://musculoskeletalkey.com/functional-musculoskeletal-anatomy/" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Musculoskeletal Key</a></div></div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Inversion / Eversion</div>
+              <div class="lesson-term-def"><strong>Inversion</strong> turns the sole of the foot inward (toward the midline). <strong>Eversion</strong> turns it outward. Most ankle sprains happen during inversion.</div>
+              <div class="lesson-image-block" style="margin-top:12px;margin-bottom:4px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Inversion%20v%20Eversion.webp" alt="Diagram showing inversion and eversion of the foot and ankle" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: <a href="https://musculoskeletalkey.com/functional-musculoskeletal-anatomy/" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Musculoskeletal Key</a></div></div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Dorsiflexion / Plantar Flexion</div>
+              <div class="lesson-term-def"><strong>Dorsiflexion</strong> lifts the foot toward the shin (toes up). <strong>Plantar flexion</strong> points the foot downward (like pressing a gas pedal).</div>
+              <div class="lesson-image-block" style="margin-top:12px;margin-bottom:4px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Dorsiflexion%20v%20Planar%20Flexion.webp" alt="Diagram showing dorsiflexion and plantar flexion of the ankle" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: <a href="https://musculoskeletalkey.com/functional-musculoskeletal-anatomy/" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Musculoskeletal Key</a></div></div>
+            </div>
+            <div class="lesson-term">
+              <div class="lesson-term-name">Superficial / Deep</div>
+              <div class="lesson-term-def"><strong>Superficial</strong> means close to the surface of the skin. <strong>Deep</strong> means further inside the tissue, closer to the bone. Example: a superficial laceration only cuts the outer skin layers.</div>
+              <div class="lesson-image-block" style="margin-top:12px;margin-bottom:4px"><img src="https://raw.githubusercontent.com/sivanisubramanian/ATlas/main/images/Superficial%20v%20Deep.webp" alt="Cross-section diagram showing superficial (near skin) and deep (near bone) layers of tissue" style="max-width:65%;border-radius:8px;border:1px solid var(--border)"/><div class="lesson-image-credit">Image: <a href="https://musculoskeletalkey.com/functional-musculoskeletal-anatomy/" target="_blank" style="color:var(--royal);text-decoration:none;font-weight:600">Musculoskeletal Key</a></div></div>
+            </div>
+          </div>`
+      },
+
+    ]
+  }
+};
+
+let currentLesson = null;
+let currentLessonPage = 0;
+let lessonOriginPage = 'dashboard';
+
+function startLesson(lessonKey) {
+  currentLesson = lessonKey;
+  currentLessonPage = 0;
+  lessonOriginPage = document.querySelector('.page.active')?.id?.replace('page-', '') || 'dashboard';
+  markModuleInProgress(lessonKey);
+  renderLessonPage();
+  showPage('lesson');
+}
+
+function renderLessonPage() {
+  const lesson = lessonData[currentLesson];
+  const pages = lesson.pages;
+  const total = pages.length;
+  const current = currentLessonPage;
+  const page = pages[current];
+  const isLast = current === total - 1;
+  const isComplete = progress.completed.has(currentLesson);
+
+  document.getElementById('lesson-content').innerHTML = page.render();
+  document.getElementById('lesson-page-label').textContent = `Page ${current + 1} of ${total}`;
+  if (page.onMount) page.onMount();
+
+  // Back button
+  const backBtn = document.getElementById('lesson-back-btn');
+  backBtn.style.visibility = current === 0 ? 'hidden' : 'visible';
+
+  // Next button
+  const nextBtn = document.getElementById('lesson-next-btn');
+  nextBtn.textContent = isLast ? 'Finish' : 'Next →';
+
+  // Green bar on last page or if already completed
+  const navBar = document.querySelector('.lesson-nav');
+  if (isLast || isComplete) {
+    navBar.style.borderTopColor = 'var(--green)';
+    nextBtn.style.background = 'var(--green)';
+  } else {
+    navBar.style.borderTopColor = 'var(--border)';
+    nextBtn.style.background = 'var(--royal)';
+  }
+}
+
+function lessonNext() {
+  const lesson = lessonData[currentLesson];
+  if (currentLessonPage < lesson.pages.length - 1) {
+    currentLessonPage++;
+    renderLessonPage();
+    window.scrollTo(0, 0);
+  } else {
+    // Finished
+    markModuleComplete(currentLesson);
+    showPage(lessonOriginPage);
+  }
+}
+
+function lessonBack() {
+  if (currentLessonPage > 0) {
+    currentLessonPage--;
+    renderLessonPage();
+    window.scrollTo(0, 0);
+  }
+}
+
+function goBack() {
+  showPage(prevPage);
+}
+</script>
+
+<script src="auth.js"></script>
+</body>
+</html>
